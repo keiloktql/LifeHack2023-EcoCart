@@ -1,14 +1,12 @@
 /* eslint-disable tailwindcss/no-custom-classname */
 /* eslint-disable no-unused-vars */
 import Image from "next/image";
-import Link from "next/link";
 import React, { useState } from "react";
 import * as Yup from "yup";
-import { Form, Formik } from "formik";
 import MainLayout from "@/components/layout/MainLayout";
 import LogoRaw from "@/public/assets/svg/logo-raw.svg";
+import LogoSGID from "@/public/assets/img/logo-sgid.png";
 import Button from "@/components/shared/Button";
-import FormField from "@/components/shared/FormField";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
@@ -42,7 +40,7 @@ const Login = () => {
   };
 
   return (
-    <MainLayout>
+    <MainLayout title="Login | EcoCart">
       <div className="smh-container w-full">
         <div
           className={`smh-card${
@@ -55,8 +53,16 @@ const Login = () => {
             Log In
           </h1>
           <p className="text-gray-600">Welcome back!</p>
-
-          <p className="mt-2 text-sm text-gray-600 text-center">
+          <hr className="h-px w-full mt-8 bg-gray-300 border-0" />
+          <Button
+            variation="EMPTY"
+            customClassName="mt-8 flex w-full items-center"
+            onClickFn={() => router.push(`/api/auth-url`)}
+          >
+            Login with{" "}
+            <Image className="ml-2" src={LogoSGID} width={40} alt="SGID" />
+          </Button>
+          <p className="mt-8 text-sm text-gray-400 text-center">
             If you do not have an EcoCart account yet, it will automatically be
             created once you sign in.
           </p>

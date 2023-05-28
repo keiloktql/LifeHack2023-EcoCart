@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-import { ErrorProps } from "next/error";
 import React from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import Button from "../../shared/Button";
@@ -22,7 +21,10 @@ function Error({ statusCode = 500 }) {
   }
 
   return (
-    <MainLayout className="mx-auto flex w-full max-w-screen-xl flex-col justify-center px-16">
+    <MainLayout
+      title={`${statusCode} Error | EcoCart`}
+      className="mx-auto flex w-full max-w-screen-xl flex-col justify-center px-16"
+    >
       <p className="font-semibold text-primary-700">{statusCode} error</p>
       <h1 className="text-display-xl font-semibold text-gray-900">{header}</h1>
       <p className="text-xl text-gray-600">{desc}</p>

@@ -3,16 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3001",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3001",
     "lint": "next lint"
   },
   "dependencies": {
+    "@opengovsg/sgid-client": "^2.0.0",
     "@supabase/auth-helpers-nextjs": "^0.7.0",
     "@supabase/auth-helpers-react": "^0.4.0",
     "@supabase/supabase-js": "^2.23.0",
     "autoprefixer": "10.4.14",
+    "cookies-next": "^2.1.1",
     "dayjs": "^1.11.7",
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.4",
@@ -23,6 +25,7 @@
     "react-dom": "18.2.0",
     "react-toastify": "^9.1.3",
     "tailwindcss": "3.3.2",
+    "uuid": "^9.0.0",
     "yup": "^1.2.0"
   },
   "devDependencies": {
