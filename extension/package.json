@@ -1,0 +1,30 @@
+{
+  "name": "chrome-extension-vanilla-js",
+  "version": "0.0.0",
+  "author": "",
+  "description": "",
+  "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "chrome-extension",
+    "vanilla",
+    "vite",
+    "create-chrome-ext"
+  ],
+  "engines": {
+    "node": ">=14.18.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "fmt": "prettier --write '**/*.{js,json,css,scss,md}'"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^1.0.12",
+    "prettier": "^2.7.1",
+    "vite": "^2.9.13",
+    "vite-plugin-zip-pack": "^1.0.5"
+  }
+}
