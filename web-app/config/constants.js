@@ -7,7 +7,7 @@ export const SUPABASE_CONFIG = {
 
 export const ENVIRONMENT = process.env.NEXT_PUBLIC_ENVIRONMENT || "DEV";
 export const PORT = process.env.NEXT_PUBLIC_PORT || 3001;
-export const PROD_HOST = "https://ecocart.web.app";
+export const PROD_HOST = "https://ecocart-lifehack2023.netlify.app";
 export const BASE_URLS = {
   PROD: PROD_HOST,
   DEV: `http://localhost:${PORT}`
