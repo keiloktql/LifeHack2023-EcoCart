@@ -20,7 +20,9 @@
     "preview": "vite preview",
     "fmt": "prettier --write '**/*.{js,json,css,scss,md}'"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@supabase/supabase-js": "^2.23.0"
+  },
   "devDependencies": {
     "@crxjs/vite-plugin": "^1.0.12",
     "prettier": "^2.7.1",
