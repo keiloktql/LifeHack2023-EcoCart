@@ -16,3 +16,29 @@ chrome.storage.onChanged.addListener((changes) => {
     );
   }
 });
+
+// Execute foreground script when shopee.sg is loaded
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  try {
+    if (
+      changeInfo.status === 'complete' &&
+      /^https:\/\/shopee.sg/.test(tab.url)
+    ) {
+      chrome.scripting
+        .executeScript({
+          target: { tabId: tabId },
+          files: ['./foreground.js'],
+        })
+        .then(() => {
+          console.log('Injected Foreground JS.');
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      console.log('shopee loading not completed.');
+    }
+  } catch (err) {
+    console.log('background error', err);
+  }
+});

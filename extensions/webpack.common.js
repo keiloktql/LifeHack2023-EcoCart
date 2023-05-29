@@ -11,6 +11,7 @@ module.exports = {
     contentScript: './src/contentScript.ts',
     popup: './src/popup.ts',
     options: './src/options.ts',
+    foreground: './src/foreground.ts',
   },
   module: {
     rules: [
