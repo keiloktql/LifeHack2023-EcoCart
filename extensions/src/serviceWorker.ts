@@ -24,6 +24,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       changeInfo.status === 'complete' &&
       /^https:\/\/shopee.sg/.test(tab.url)
     ) {
+      console.log('shopee loading completed.');
       chrome.scripting
         .executeScript({
           target: { tabId: tabId },

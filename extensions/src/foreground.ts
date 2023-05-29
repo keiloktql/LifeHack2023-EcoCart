@@ -56,7 +56,9 @@ const runScriptProductPage = (function () {
 })();
 
 // Insert banner into the page
-const addReinforcement = async function (positive = true) {};
+const addReinforcement = async function (positive = true) {
+  console.log('HELLO');
+};
 
 const waitFor = function (varSetter, sleepTime, condition, continuation) {
   const variable = varSetter();
@@ -82,18 +84,21 @@ const loadCss = function () {
   head.appendChild(link);
 };
 
-waitFor(
-  getSpecificElement,
-  1000,
-  (wrapper) =>
-    wrapper !== null && wrapper.querySelector('.page-product__detail') !== null,
-  function () {
-    // Check if the url is a product page or search page by checking the url
-    const url = window.location.href;
-    const isSearchPage = url.includes('search');
+(() => {
+  console.log('HIII');
+  waitFor(
+    getSpecificElement,
+    1000,
+    (wrapper) =>
+      wrapper !== null &&
+      wrapper.querySelector('.page-product__detail') !== null,
+    function () {
+      console.log('THIS IS BEING CALLED');
+      // Check if the url is a product page or search page by checking the url
+      const url = window.location.href;
+      const isSearchPage = url.includes('search');
 
-    if (!isSearchPage) runScriptProductPage(getWrapper());
-  },
-);
-
-export {};
+      if (!isSearchPage) runScriptProductPage(getWrapper());
+    },
+  );
+})();

@@ -6,11 +6,12 @@
   "background": {
     "service_worker": "serviceWorker.js"
   },
-  "permissions": ["activeTab", "scripting", "storage", "tabs"],
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true
   },
+  "permissions": ["activeTab", "scripting", "storage", "tabs"],
+  "host_permissions": ["<all_urls>"],
   "action": {
     "default_title": "My basic Chrome extension",
     "default_popup": "popup.html",
