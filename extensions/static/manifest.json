@@ -27,5 +27,14 @@
     "32": "/img/logo-34.png",
     "48": "/img/logo-48.png",
     "128": "/img/logo-128.png"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "overlay.html",
+        "overlay.css"
+      ],
+      "matches": ["https://shopee.sg/*"]
+    }
+  ]
 }

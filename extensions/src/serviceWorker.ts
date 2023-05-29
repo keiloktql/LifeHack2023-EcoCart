@@ -3,7 +3,12 @@ console.log('service worker running');
 chrome.runtime.onInstalled.addListener(async () => {
   // Here goes everything you want to execute after extension initialization
 
-  await initializeStorageWithDefaults({});
+  await initializeStorageWithDefaults({
+    newsSite: 'gnn',
+    netFlix: true,
+    mySport: 'football',
+    myHobby: 'reading',
+  });
 
   console.log('Extension successfully installed!');
 });
@@ -39,19 +44,19 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
           .catch((err) => {
             console.log(err);
           });
+      } else {
+        chrome.scripting
+          .executeScript({
+            target: { tabId: tabId },
+            files: ['./foreground.js'],
+          })
+          .then(() => {
+            console.log('Injected Foreground JS.');
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
-
-      chrome.scripting
-        .executeScript({
-          target: { tabId: tabId },
-          files: ['./foreground.js'],
-        })
-        .then(() => {
-          console.log('Injected Foreground JS.');
-        })
-        .catch((err) => {
-          console.log(err);
-        });
     } else {
       console.log('shopee loading not completed.');
     }

@@ -2,6 +2,211 @@
 // @ts-nocheck
 console.info('chrome-ext template-vanilla-js content script');
 
+// Switch for the popup
+let activePopup = false;
+let counter = 0;
+let theNewssite, haveNetflix, theSport, theHobby;
+
+chrome.storage.local.get('newsSite', (data) => {
+  if (chrome.runtime.lastError) {
+    return;
+  }
+  theNewssite = data.newsSite;
+});
+chrome.storage.local.get('netFlix', (data) => {
+  if (chrome.runtime.lastError) {
+    return;
+  }
+  haveNetflix = data.netFlix;
+});
+chrome.storage.local.get('mySport', (data) => {
+  if (chrome.runtime.lastError) {
+    return;
+  }
+  theSport = data.mySport;
+});
+chrome.storage.local.get('myHobby', (data) => {
+  if (chrome.runtime.lastError) {
+    return;
+  }
+  theHobby = data.myHobby;
+});
+
+const makePopup = (function () {
+  return function (score) {
+    // Check if element exists, otherwise make one
+    let poop = document.getElementById('alertPopup');
+    if (poop) document.getElementById('alertPopup').remove();
+
+    poop = document.createElement('div');
+    poop.setAttribute('id', 'alertPopup');
+
+    document.body.prepend(poop);
+    document.documentElement.classList.add('alertedPopup');
+
+    // This would be so much easier with jQuery but lets not load a whole library to do one thing
+    // $(poop).load("theHtmlFile.html"); though
+    let request = new XMLHttpRequest();
+
+    // eslint-disable-next-line no-undef
+    request.open('GET', chrome.runtime.getURL('overlay.html'), true);
+    request.onload = function () {
+      if (request.status >= 200 && request.status < 400) {
+        let resp = request.responseText;
+        poop.innerHTML = resp;
+        genPopup(poop, score);
+      }
+    };
+
+    request.send();
+
+    const genPopup = function (elem, score) {
+      const populateNav = function (theNav) {
+        if (theNav) {
+          if (haveNetflix)
+            theNav.innerHTML += '<a href="http://netflix.com">Netflix</a>';
+          theNav.innerHTML += newsLink(theNewssite);
+          theNav.innerHTML +=
+            '<span>' +
+            theSport[0].toUpperCase() +
+            theSport.substring(1) +
+            '</span>';
+          theNav.innerHTML +=
+            '<span>' +
+            theHobby[0].toUpperCase() +
+            theHobby.substring(1) +
+            '</span>';
+        }
+
+        function newsLink(theNewssite) {
+          let link;
+          switch (theNewssite) {
+            case 'gnn':
+              link =
+                '<a href="http://www.goodnewsnetwork.org">Good News Network</a>';
+              break;
+            case 'pn':
+              link = '<a href="http://www.positive.news">Positive News</a>';
+              break;
+            case 'od':
+              link =
+                '<a href="http://www.optimistdaily.com">Optimist Daily</a>';
+              break;
+            case 'reddit':
+              link =
+                '<a href="http://reddit.com/r/UpliftingNews">r/UpliftingNews</a>';
+              break;
+            default:
+              link = '';
+              break;
+          } //switch
+          return link;
+        }
+      };
+      // score should range from -0.5 to 0.5 (normalized)
+      // lower is worse, if 100% turn off
+      // go back to [0, 1] then subtract
+      let displayValue = 100 * (1 - (score + 0.5)); // % to display
+      elem.querySelectorAll('.popupContent .pSc')[0].innerHTML =
+        displayValue.toFixed(0) + '%';
+      populateNav(elem.querySelectorAll('.popupContent nav')[0]);
+
+      let close1 = elem.querySelectorAll('.popupContent .cls')[0];
+      let close2 = elem.querySelectorAll('.popupContent .fx')[0];
+
+      close1.style.visibility = 'hidden';
+      setTimeout(function () {
+        close1.style.visibility = 'visible';
+        close2.style.visibility = 'hidden';
+      }, 10000); //10s timer
+
+      // Bind events
+      close1.addEventListener('click', removePopup);
+      close2.addEventListener('click', forceClosePopup);
+
+      // Change color if darkmode
+      let bgColor = window
+        .getComputedStyle(document.body)
+        .getPropertyValue('background-color');
+      document.documentElement.style.setProperty('--background', bgColor);
+      document.documentElement.style.setProperty(
+        '--transparency',
+        'rgba(' + bgColor.split('(')[1].split(')')[0] + ',0.5)',
+      );
+      if (!(bgColor == '#ffffff' || bgColor == 'rgb(255, 255, 255)')) {
+        document.documentElement.style.setProperty('--text', '#ffffff');
+        document.documentElement.style.setProperty(
+          '--petalb',
+          'rgba(255,255,255,0.3)',
+        );
+      }
+
+      if (document.getElementsByClassName('petalbloom')[0] === undefined)
+        return;
+      // Kill some plants yo
+      killFlower(score);
+    };
+  };
+})();
+
+// Function to kill the plants
+let killFlower = function (score) {
+  if (score <= 1)
+    document.getElementsByClassName('pb1')[0].classList.add('dead');
+  else document.getElementsByClassName('pb1')[0].classList.remove('dead');
+
+  if (score <= 2)
+    document.getElementsByClassName('pb2')[0].classList.add('dead');
+  else document.getElementsByClassName('pb2')[0].classList.remove('dead');
+
+  if (score <= 3)
+    document.getElementsByClassName('pb3')[0].classList.add('dead');
+  else document.getElementsByClassName('pb3')[0].classList.remove('dead');
+
+  if (score <= 4)
+    document.getElementsByClassName('pb4')[0].classList.add('dead');
+  else document.getElementsByClassName('pb4')[0].classList.remove('dead');
+
+  if (score <= 5)
+    document.getElementsByClassName('pb5')[0].classList.add('dead');
+  else document.getElementsByClassName('pb5')[0].classList.remove('dead');
+};
+
+// Function to regen petals over time
+let tHnd; // global so that I can turn it off elsewhere
+
+// Function to remove the popup gently and reset the score
+let removePopup = function () {
+  let thePopup = document.getElementById('alertPopup');
+  if (thePopup) thePopup.remove();
+
+  document.documentElement.classList.remove('alertedPopup');
+
+  // Reset score
+  totalScore = 0;
+  activePopup = false;
+  counter = 0;
+};
+
+// Function to force the popup to close
+let forceClosePopup = function () {
+  let thePopup = document.getElementById('alertPopup');
+  if (thePopup) thePopup.remove();
+
+  document.documentElement.classList.remove('alertedPopup');
+
+  // Turn off the popup trigger
+  activePopup = false;
+
+  // Set timer to turn it on again
+  activePopup = setTimeout(function () {
+    return true;
+  }, 10000);
+
+  // Stop petals from regenerating
+  clearInterval(tHnd);
+};
+
 // Get the wrapper element
 function getWrapper() {
   return document.querySelectorAll('div[role="main"]')[0];
@@ -20,7 +225,7 @@ function doesProductExistInDatabase() {
 const runScriptProductPage = (function () {
   return async function (wrapper) {
     try {
-      // Variables
+      // letiables
       const productInformation = {
         categories: [],
       };
@@ -60,6 +265,7 @@ const runScriptProductPage = (function () {
       productTitleWrapper.parentElement.prepend(
         await addReinforcement(doesProductExistInDatabase, productInformation),
       );
+      makePopup(0.2);
     } catch (err) {
       console.log(err);
     }
@@ -73,26 +279,31 @@ const addReinforcement = async function (
 ) {
   const node = document.createElement('div');
   node.innerHTML = `
-    <div id="ecocart-flag" class="ecocart-banner" style="border: 1px solid var(--petalc); color: var(--petalc); background: #CBF0C1; /* padding: 1rem; */ font: 0.9rem sans-serif; width: 100%; margin-bottom: 1rem; padding-left: 1rem; padding-top: 1rem; padding-bottom: 1rem; border-radius: 5px;">
+    <div id="ecocart-flag" class="ecocart-banner" style="border: 1px solid let(--petalc); color: let(--petalc); background: #CBF0C1; /* padding: 1rem; */ font: 0.9rem sans-serif; width: 100%; margin-bottom: 1rem; padding-left: 1rem; padding-top: 1rem; padding-bottom: 1rem; border-radius: 5px;">
       <span>
-        ${dataExistInDatabase && '<img src="https://w7.pngwing.com/pngs/910/897/png-transparent-twitter-verified-badge-hd-logo.png" style="height: 17px; width: 17px;">'}
-        Did you the process of making '${productInformation['Product Name']}' produces <b>1000kg</b> of CO2? That is equivalent to driving a car (10km) or charging your phone (1000 times)!
+        ${
+          dataExistInDatabase &&
+          '<img src="https://w7.pngwing.com/pngs/910/897/png-transparent-twitter-verified-badge-hd-logo.png" style="height: 17px; width: 17px;">'
+        }
+        Did you the process of making '${
+          productInformation['Product Name']
+        }' produces <b>1000kg</b> of CO2? That is equivalent to driving a car (10km) or charging your phone (1000 times)!
       </span>
     </div>`;
 
   return node;
 };
 
-const waitFor = function (varSetter, sleepTime, condition, continuation) {
-  const variable = varSetter();
+const waitFor = function (letSetter, sleepTime, condition, continuation) {
+  const letiable = letSetter();
 
-  if (!condition(variable)) {
+  if (!condition(letiable)) {
     setTimeout(
-      () => waitFor(varSetter, sleepTime, condition, continuation),
+      () => waitFor(letSetter, sleepTime, condition, continuation),
       sleepTime,
     );
   } else {
-    continuation(variable);
+    continuation(letiable);
   }
 };
 
@@ -102,7 +313,7 @@ const loadCss = function () {
   const link = $.createElement('link');
   link.rel = 'stylesheet';
   link.type = 'text/css';
-  link.href = chrome.runtime.getURL('popup.css');
+  link.href = chrome.runtime.getURL('overlay.css');
   link.media = 'all';
   head.appendChild(link);
 };
@@ -119,6 +330,7 @@ const loadCss = function () {
       const url = window.location.href;
       const isSearchPage = url.includes('search');
 
+      loadCss();
       if (!isSearchPage) runScriptProductPage(getWrapper());
     },
   );
