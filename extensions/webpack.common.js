@@ -12,6 +12,7 @@ module.exports = {
     popup: './src/popup.ts',
     options: './src/options.ts',
     foreground: './src/foreground.ts',
+    cart: './src/cart.ts',
   },
   module: {
     rules: [

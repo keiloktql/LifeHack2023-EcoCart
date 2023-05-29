@@ -25,6 +25,22 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       /^https:\/\/shopee.sg/.test(tab.url)
     ) {
       console.log('shopee loading completed.');
+
+      // Check if the url has cart in the url in the end for example https://shopee.sg/cart
+      if (tab.url.endsWith('cart')) {
+        chrome.scripting
+          .executeScript({
+            target: { tabId: tabId },
+            files: ['./cart.js'],
+          })
+          .then(() => {
+            console.log('Injected Cart JS.');
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+
       chrome.scripting
         .executeScript({
           target: { tabId: tabId },
