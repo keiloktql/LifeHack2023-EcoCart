@@ -209,10 +209,10 @@ const Dashboard = () => {
             <h1 className="mb-4 font-semibold text-xl">
               Shopping Transactions
             </h1>
-            {transactions ? (
+            {transactions.length ? (
               <Table columns={tableCol} rows={transactions} />
             ) : (
-              "No data"
+              "No data."
             )}
           </div>
         </div>
