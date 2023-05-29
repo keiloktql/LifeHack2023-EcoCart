@@ -1,8 +1,9 @@
-import { defineManifest } from '@crxjs/vite-plugin';
+import { defineManifest } from '@crxjs/vite-plugin'
 
 export default defineManifest({
-  name: 'EcoCart',
-  description: '',
+  name: 'EcoCart - AI Powered Sustainable Shopping Companion',
+  description:
+    'Track and manage your carbon footprint from your shopping transactions with the power of AI.',
   version: '0.0.0',
   manifest_version: 3,
   icons: {
@@ -32,13 +33,6 @@ export default defineManifest({
       matches: [],
     },
   ],
-  permissions: [
-    "activeTab",
-    "scripting",
-    "storage",
-    "tabs",
-  ],
-  host_permissions: [
-    "<all_urls>"
-  ],
-});
+  permissions: ['activeTab', 'scripting', 'storage', 'tabs'],
+  host_permissions: ['<all_urls>'],
+})

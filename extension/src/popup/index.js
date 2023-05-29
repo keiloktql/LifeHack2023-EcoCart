@@ -4,15 +4,19 @@ const crx = 'create-chrome-ext'
 
 document.querySelector('#app').innerHTML = `
 <main>
-<h3>Popup Page!</h3>
-
-<h6>v 0.0.0</h6>
-
-<a
-  href="https://www.npmjs.com/package/create-chrome-ext"
-  target="_blank"
->
-  Power by ${crx}
-</a>
+  <div>
+    <div>
+        <img src="img/logo-34.png" alt="logo" />
+        <div>
+            <h1>EcoCart</h1>
+            <p>AI Powered Sustainable Shopping Companion</p>
+        </div>
+    </div>
+    <button>Login with Google</button>
+    <hr />
+    <div className="Footer">
+        <p>Made with &#9829; from Singapore.</p>
+    </div>
+  </div>
 </main>
 `
