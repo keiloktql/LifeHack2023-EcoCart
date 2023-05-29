@@ -1,5 +1,9 @@
 console.info('chrome-ext template-vanilla-js content script');
 
+function hasDOMLoaded() {
+  return document.readyState === 'complete';
+}
+
 // Get the wrapper element
 function getWrapper() {
   return document.querySelectorAll('div[role="main"]')[0];
@@ -21,6 +25,7 @@ const runScriptProductPage = (function () {
     productInformation.categories = Array.from(breadcrumbWrapper.querySelectorAll("a, span")).map((breadcrumb) => {
       return breadcrumb.innerText;
     });
+
     Array.from(productRowAndColumn).forEach((row) => {
       const title = row.querySelector("label").innerText;
 
@@ -30,6 +35,10 @@ const runScriptProductPage = (function () {
   };
 })();
 
+// Insert banner into the page
+const addReinforcement = async function (positive = true) {
+
+};
 
 const waitFor = function (
   varSetter,
@@ -62,8 +71,8 @@ const loadCss = function () {
 
 waitFor(
   getWrapper,
-  3000,
-  (wrapper) => wrapper !== undefined,
+  1000,
+  (wrapper) => wrapper !== undefined && hasDOMLoaded,
   function (wrapper) {
     // check if loading is done
     console.log("wrapper", wrapper);

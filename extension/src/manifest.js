@@ -1,7 +1,7 @@
 import { defineManifest } from '@crxjs/vite-plugin';
 
 export default defineManifest({
-  name: 'create-chrome-ext',
+  name: 'EcoCart',
   description: '',
   version: '0.0.0',
   manifest_version: 3,
