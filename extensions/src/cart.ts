@@ -20,7 +20,6 @@ import { getCurrentUser, supabase } from './popup';
 
   const overrideCheckoutButton = async function (wrapper): Promise<void> {
     const checkoutFooter = wrapper.querySelector('.rnocow > div.c2pfrq');
-    console.log(checkoutFooter);
     // Create a div
     const node = document.createElement('button');
     node.id = 'ecocart-button';
@@ -31,9 +30,17 @@ import { getCurrentUser, supabase } from './popup';
                   <span class="btn__text">Checkout</span>
               </span>
           `;
+
+    const node2 = document.createElement('div');
+    node2.id = 'ecocart-text';
+    // total co2 emission for the cart
+    const arbitaryNumber = Math.floor(Math.random() * (1000 - 100) + 1000);
+    node2.innerHTML = `<p style="padding-left: .5rem;">Estimated CO2 emission: ${arbitaryNumber}g</p>`;
+
     // Insert the button before the checkout button if there are no existing buttons with the same id
     if (checkoutFooter.querySelector('#ecocart-button') === null) {
       // Insert it before the last child
+      checkoutFooter.insertBefore(node2, checkoutFooter.lastChild);
       checkoutFooter.insertBefore(node, checkoutFooter.lastChild);
       node.addEventListener('click', () => {
         console.log('clicked');
