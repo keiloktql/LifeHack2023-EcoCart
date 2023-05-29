@@ -1,8 +1,4 @@
-import {
-  getStorageData,
-  getStorageItem,
-  initializeStorageWithDefaults,
-} from './storage';
+import { initializeStorageWithDefaults } from './storage';
 console.log('service worker running');
 chrome.runtime.onInstalled.addListener(async () => {
   // Here goes everything you want to execute after extension initialization
@@ -101,7 +97,6 @@ const setTokens = async (
 ) => {
   // once the tab is loaded
   if (tab.status === 'complete') {
-    console.log('test');
     if (!tab.url) return;
     const url = new URL(tab.url);
 
@@ -131,8 +126,6 @@ const setTokens = async (
         await chrome.storage.sync.set({
           [chromeStorageKeys.gauthRefreshToken]: refreshToken,
         });
-        const test = await getStorageData();
-        console.log(test);
 
         // remove tab listener as tokens are set
         chrome.tabs.onUpdated.removeListener(setTokens);

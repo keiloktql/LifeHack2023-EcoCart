@@ -6,19 +6,24 @@ window.onload = function () {
   getCurrentUser().then((resp) => {
     if (resp) {
       console.log('user id:', resp.user.id);
+      document.querySelector('.btn-auth').textContent = 'Logout';
+      // queries to update frontend
     } else {
       console.log('user is not found');
     }
   });
 };
 
-document.getElementById('go-to-options').addEventListener('click', () => {
-  chrome.runtime.openOptionsPage();
-});
 document
-  .querySelector('.login-btn-auth')
+  .querySelector('.btn-auth')
   .addEventListener('click', async function () {
-    await signInWithGoogle();
+    getCurrentUser().then(async (resp) => {
+      if (resp) {
+        await logoutWithGoogle();
+      } else {
+        await signInWithGoogle();
+      }
+    });
   });
 
 const SUPABASE_PUBLIC_URL = 'https://raxkpyazhqcszrhtppyi.supabase.co';
@@ -34,13 +39,21 @@ export async function signInWithGoogle() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
   });
-  console.log(data);
 
   // tell background service worker to create a new tab with that url
   await chrome.runtime.sendMessage({
     action: 'signInWithGoogle',
     payload: { url: data.url }, // url is something like: https://[project_id].supabase.co/auth/v1/authorize?provider=google
   });
+}
+
+// logout
+export async function logoutWithGoogle() {
+  const { error } = await supabase.auth.signOut();
+  await chrome.storage.sync.clear();
+
+  // Document queries to update frontend
+  document.querySelector('.btn-auth').textContent = 'Login';
 }
 
 export async function getCurrentUser(): Promise<null | {
