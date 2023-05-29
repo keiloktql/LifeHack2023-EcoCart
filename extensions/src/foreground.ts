@@ -221,7 +221,7 @@ function doesProductExistInDatabase() {
   return false;
 }
 
-// Function to call on product page
+// Function to call on product pagex
 const runScriptProductPage = (function () {
   return async function (wrapper) {
     try {
@@ -265,10 +265,17 @@ const runScriptProductPage = (function () {
       productTitleWrapper.parentElement.prepend(
         await addReinforcement(doesProductExistInDatabase, productInformation),
       );
-      makePopup(0.2);
+      // makePopup(0.2);
     } catch (err) {
       console.log(err);
     }
+  };
+})();
+
+const runScriptSearchPage = (function () {
+  return async function (wrapper) {
+    console.log("DOOMED")
+    console.log(wrapper)
   };
 })();
 
@@ -335,12 +342,18 @@ const loadCss = function () {
       wrapper !== null &&
       wrapper.querySelector('.page-product__detail') !== null,
     function () {
+      console.log("I AM BEING INVOKED HERE")
       // Check if the url is a product page or search page by checking the url
       const url = window.location.href;
       const isSearchPage = url.includes('search');
 
+      console.log(isSearchPage)
       loadCss();
-      if (!isSearchPage) runScriptProductPage(getWrapper());
+      if (!isSearchPage) {
+        runScriptProductPage(getWrapper());
+      } else {
+        runScriptSearchPage(getWrapper());
+      }
     },
   );
 })();

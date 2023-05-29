@@ -13,6 +13,7 @@ module.exports = {
     options: './src/options.ts',
     foreground: './src/foreground.ts',
     cart: './src/cart.ts',
+    search: './src/search.ts',
   },
   module: {
     rules: [

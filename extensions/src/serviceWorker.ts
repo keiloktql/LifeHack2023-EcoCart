@@ -27,39 +27,34 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       changeInfo.status === 'complete' &&
       /^https:\/\/shopee.sg/.test(tab.url)
     ) {
-      console.log('shopee loading completed.');
+      console.log('Shopee loading completed.');
 
-      // Check if the url has cart in the url in the end for example https://shopee.sg/cart
+      let scriptFile = './foreground.js';
+
       if (tab.url.endsWith('cart')) {
-        chrome.scripting
-          .executeScript({
-            target: { tabId: tabId },
-            files: ['./cart.js'],
-          })
-          .then(() => {
-            console.log('Injected Cart JS.');
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      } else {
-        chrome.scripting
-          .executeScript({
-            target: { tabId: tabId },
-            files: ['./foreground.js'],
-          })
-          .then(() => {
-            console.log('Injected Foreground JS.');
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        scriptFile = './cart.js';
+      } else if (tab.url.includes('search')) {
+        scriptFile = './search.js';
       }
+
+      console.info("Executing script: '" + scriptFile + "'");
+
+      chrome.scripting
+        .executeScript({
+          target: { tabId: tabId },
+          files: [scriptFile],
+        })
+        .then(() => {
+          console.log(`Injected ${scriptFile}.`);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } else {
-      console.log('shopee loading not completed.');
+      console.log('Shopee loading not completed.');
     }
   } catch (err) {
-    console.log('background error', err);
+    console.log('Background error:', err);
   }
 });
 
