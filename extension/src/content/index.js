@@ -1,37 +1,50 @@
 console.info('chrome-ext template-vanilla-js content script');
 
-function hasDOMLoaded() {
-  return document.readyState === 'complete';
-}
-
 // Get the wrapper element
 function getWrapper() {
   return document.querySelectorAll('div[role="main"]')[0];
 }
 
+// Get a specific element
+function getSpecificElement() {
+  return document.querySelector('div.page-product__content');
+}
+
 // Function to call on product page
 const runScriptProductPage = (function () {
-  return async function (wrapper) {
-    console.log(wrapper);
+  return async function () {
     // Variables
+    const wrapper = getWrapper();
     const productInformation = {
       categories: []
     };
     const breadcrumbWrapper = wrapper.querySelector("div.page-product__breadcrumb");
-    const productWrapper = wrapper.querySelectorAll("div.product-detail > div")[0];
+    const productWrapper = wrapper.querySelector(".page-product__detail > div");
     const productRowAndColumn = productWrapper.querySelectorAll("div.dR8kXc");
 
     // Scripting
-    productInformation.categories = Array.from(breadcrumbWrapper.querySelectorAll("a, span")).map((breadcrumb) => {
-      return breadcrumb.innerText;
-    });
+    productInformation.categories = Array.from(breadcrumbWrapper.querySelectorAll("a, span"))
+      .map((breadcrumb) => {
+        return breadcrumb.innerText;
+      });
 
+    productInformation["Product Name"] = productInformation.categories[productInformation.categories.length - 1];
     Array.from(productRowAndColumn).forEach((row) => {
       const title = row.querySelector("label").innerText;
-
       const body = (row.querySelector("div") && row.querySelector("div").innerText) || "";
-      productInformation[title] = body;
+
+      // if the body is an empty string, it might be because it's a link / anchor tag
+      if (body === "") {
+        const anchor = row.querySelector("a");
+        if (anchor) {
+          productInformation[title] = anchor.innerText;
+        }
+      } else {
+        productInformation[title] = body;
+      }
     });
+
+    console.log(productInformation);
   };
 })();
 
@@ -70,17 +83,15 @@ const loadCss = function () {
 };
 
 waitFor(
-  getWrapper,
+  getSpecificElement,
   1000,
-  (wrapper) => wrapper !== undefined && hasDOMLoaded,
-  function (wrapper) {
-    // check if loading is done
-    console.log("wrapper", wrapper);
+  wrapper => (wrapper !== null && wrapper.querySelector(".page-product__detail") !== null),
+  function () {
     // Check if the url is a product page or search page by checking the url
     const url = window.location.href;
     const isSearchPage = url.includes("search");
 
-    if (!isSearchPage) runScriptProductPage(wrapper);
+    if (!isSearchPage) runScriptProductPage(getWrapper());
   }
 );
 
