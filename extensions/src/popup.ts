@@ -12,19 +12,19 @@ window.onload = function () {
       console.log('user is not found');
     }
   });
-};
 
-document
-  .querySelector('.btn-auth')
-  .addEventListener('click', async function () {
-    getCurrentUser().then(async (resp) => {
-      if (resp) {
-        await logoutWithGoogle();
-      } else {
-        await signInWithGoogle();
-      }
+  document
+    .querySelector('.btn-auth')
+    .addEventListener('click', async function () {
+      getCurrentUser().then(async (resp) => {
+        if (resp) {
+          await logoutWithGoogle();
+        } else {
+          await signInWithGoogle();
+        }
+      });
     });
-  });
+};
 
 const SUPABASE_PUBLIC_URL = 'https://raxkpyazhqcszrhtppyi.supabase.co';
 const SUPABASE_PUBLIC_ANON_KEY =

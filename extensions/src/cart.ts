@@ -1,5 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
+import { createClient, User } from '@supabase/supabase-js';
+import { getCurrentUser, supabase } from './popup';
 
 (() => {
   function getWrapper(): Element | null {
@@ -41,6 +43,21 @@
         node.style.opacity = 0.5;
         node.innerText = 'Processing...';
         node.disabled = true;
+        const arbitaryNumber = Math.floor(Math.random() * (1000 - 100) + 100);
+        getCurrentUser().then(async (resp) => {
+          if (resp) {
+            console.log('user found and inserting to transaction db...');
+            const { error } = await supabase.from('transactions').insert({
+              user_uuid: resp.user.id,
+              co_emission: arbitaryNumber,
+              merchant: 'Shopee',
+              transaction_link: 'https://shopee.sg/cart',
+            });
+            console.log(error);
+          } else {
+            console.log('user is not found');
+          }
+        });
       });
       // Destroy the last child
       checkoutFooter.removeChild(checkoutFooter.lastChild);
