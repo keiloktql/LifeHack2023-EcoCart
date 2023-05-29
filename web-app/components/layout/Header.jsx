@@ -12,6 +12,7 @@ const Header = () => {
   const router = useRouter();
   const { auth } = useAuth();
   const supabaseClient = useSupabaseClient();
+  const path = router.asPath;
 
   const logoutFn = async () => {
     const { error } = await supabaseClient.auth.signOut();
@@ -51,12 +52,16 @@ const Header = () => {
           {auth?.userInfo ? (
             <Button onClickFn={logoutFn}>Log out</Button>
           ) : (
-            <Button
-              onClickFn={() => router.push("/login")}
-              customClassName="mr-2"
-            >
-              Log In
-            </Button>
+            <>
+              {!path.startsWith("/login") && (
+                <Button
+                  onClickFn={() => router.push("/login")}
+                  customClassName="mr-2"
+                >
+                  Log In
+                </Button>
+              )}
+            </>
           )}
         </div>
       </div>

@@ -32,3 +32,8 @@ a:active {
 .override-empty-btn {
   border: 1px solid #d0d5dd;
 }
+
+.override-home {
+  background-image: url("/assets/img/bg-pattern.png");
+  background-position: center;
+}
