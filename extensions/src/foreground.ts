@@ -1,5 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
+import { setStorageData, getStorageData } from './storage';
+
 // console.info('chrome-ext template-vanilla-js content script');
 
 // // Switch for the popup
@@ -225,6 +227,7 @@ function doesProductExistInDatabase() {
 const runScriptProductPage = (function () {
   return async function (wrapper) {
     try {
+      console.log(await getStorageData());
       // letiables
       const productInformation = {
         categories: [],
@@ -274,8 +277,8 @@ const runScriptProductPage = (function () {
 
 const runScriptSearchPage = (function () {
   return async function (wrapper) {
-    console.log("DOOMED")
-    console.log(wrapper)
+    console.log('DOOMED');
+    console.log(wrapper);
   };
 })();
 
@@ -342,12 +345,12 @@ const loadCss = function () {
       wrapper !== null &&
       wrapper.querySelector('.page-product__detail') !== null,
     function () {
-      console.log("I AM BEING INVOKED HERE")
+      console.log('I AM BEING INVOKED HERE');
       // Check if the url is a product page or search page by checking the url
       const url = window.location.href;
       const isSearchPage = url.includes('search');
 
-      console.log(isSearchPage)
+      console.log(isSearchPage);
       loadCss();
       if (!isSearchPage) {
         runScriptProductPage(getWrapper());

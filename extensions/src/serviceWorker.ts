@@ -8,6 +8,7 @@ chrome.runtime.onInstalled.addListener(async () => {
     netFlix: true,
     mySport: 'football',
     myHobby: 'reading',
+    score: 0,
   });
 
   console.log('Extension successfully installed!');

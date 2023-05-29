@@ -1,5 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
+import { getStorageData, setStorageData } from './storage';
 
 // Generate a list of preferred brands that are environmentally conscious and friendly
 const PREFERRED_BRANDS = [
@@ -55,7 +56,6 @@ const PREFERRED_BRANDS = [
             if (title?.includes(brand)) {
               console.log('Found preferred brand:', brand);
               // Change the cards to green
-              console.log(title);
 
               // Add a  pill saying this is a preferred brand
               // Prepend the pill to the card
@@ -68,8 +68,16 @@ const PREFERRED_BRANDS = [
                 </div>
                 `;
               card.querySelector('.hpDKMN')?.prepend(pill);
-
               card.style.backgroundColor = 'green';
+
+              // if the user clicks on the card, add score to the user in chrome storage
+              card.addEventListener('click', async () => {
+                const currentStorageData = await getStorageData();
+                const newStorageData = Object.assign({}, currentStorageData, {
+                  score: currentStorageData.score + 1,
+                });
+                await setStorageData(newStorageData);
+              });
             }
           }
         }
