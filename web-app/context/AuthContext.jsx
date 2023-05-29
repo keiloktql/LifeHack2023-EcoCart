@@ -1,3 +1,4 @@
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { createContext, useEffect, useState } from "react";
 
 export const AuthContext = createContext({});
@@ -8,33 +9,25 @@ const AuthProvider = ({ children }) => {
     event: null,
     userInfo: null
   });
+  const supabaseClient = useSupabaseClient();
 
   // On initial load, check if user info is loaded
   useEffect(() => {
     (async () => {
-      let newUserInfo = null;
-      try {
-        setAuth((prevVal) => ({ ...prevVal, loading: true }));
-        const res = await fetch("/api/userinfo", { credentials: "include" });
-        const data = await res.json();
-        const weirdNaming = "myinfo.name";
-        if (data) {
-          newUserInfo = {
-            uniqueId: data.sub,
-            name: data.userInfo[weirdNaming]
-          };
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setAuth((prevVal) => ({
-          ...prevVal,
-          userInfo: newUserInfo,
-          loading: false
-        }));
+      const user = await supabaseClient.auth.getUser();
+      if (!user.data.user) {
+        setAuth((prevVal) => ({ ...prevVal, loading: false }));
       }
     })();
   }, []);
+
+  // Determine if user is logged in
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_OUT")
+      setAuth({ loading: false, event, userInfo: null });
+    if (event === "SIGNED_IN")
+      setAuth({ loading: false, event, userInfo: session?.user });
+  });
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>
