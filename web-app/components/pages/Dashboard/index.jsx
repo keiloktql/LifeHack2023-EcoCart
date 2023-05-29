@@ -1,7 +1,6 @@
 /* eslint-disable prefer-const */
 /* eslint-disable no-unused-vars */
 import MainLayout from "@/components/layout/MainLayout";
-import useAuth from "@/hooks/useAuth";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import Table from "@/components/shared/Table";
 import { useEffect, useState } from "react";
@@ -10,69 +9,140 @@ import LogoSGID from "@/public/assets/img/logo-sgid.png";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
+import LogoShopee from "@/public/assets/svg/icon-shopee.svg";
+import LogoLazada from "@/public/assets/svg/icon-lazada.svg";
+import dayjs from "dayjs";
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Filler,
+  Legend
+} from "chart.js";
+import { chartData, chartLabels, chartOptions } from "./chart";
 
 const Dashboard = () => {
   const supabaseClient = useSupabaseClient();
-  const { auth } = useAuth();
-  const userInfo = auth.userInfo;
   const user = useUser();
   const [transactions, setTransactions] = useState([]);
   const [sgidVerified, setSgidVerified] = useState(false);
+  const [totalCO, setTotalCO] = useState(0);
+  const [rawChartData, setRawChartData] = useState(() =>
+    chartLabels.map(() => 0)
+  );
   const router = useRouter();
   const query = router.asPath;
 
-  const mockTransactions = [
-    {
-      co_emission: 300,
-      merchant: "shopee",
-      date: 1685296739,
-      transaction_link: "https://flowbite.com/docs/components/tables/"
-    },
-    {
-      co_emission: 450,
-      merchant: "lazada",
-      date: 1685296739,
-      transaction_link: "https://tailwindcss.com/docs/border-width"
+  const loadMerchantImage = (data) => {
+    switch (data) {
+      case "Shopee": {
+        return (
+          <p className="flex">
+            <Image className="mr-2" src={LogoShopee} width={20} alt="logo" />
+            Shopee
+          </p>
+        );
+        break;
+      }
+      case "Lazada": {
+        return (
+          <p className="flex">
+            <Image className="mr-2" src={LogoLazada} width={20} alt="logo" />
+            Lazada
+          </p>
+        );
+        break;
+      }
+      default: {
+        return <p className="flex">{data}</p>;
+      }
     }
-  ];
+  };
 
   useEffect(() => {
+    // Success toast for sgid verification
     if (query.includes("true")) {
       toast.success("Successfully verified with SGID!");
       router.replace("/dashboard", undefined, { shallow: true }); // remove query param from url
     }
+
     (async () => {
-      const { data, error } = await supabaseClient.from("accounts").select();
-      if (error || !data.length) {
+      // Check if user is SGID verified
+      const { data: dataOne, error: errorOne } = await supabaseClient
+        .from("accounts")
+        .select();
+      if (errorOne || !dataOne.length) {
         toast.error("Something went wrong!");
         console.log("Cannot query accounts");
         return;
       }
-      setSgidVerified(data[0].sgid_verified);
-    })();
-    setTransactions((data) => [
-      {
-        value: data.co_emission,
-        isLink: false
-      },
-      {
-        value: data.co_emission,
-        isLink: false
-      },
-      {
-        value: data.co_emission,
-        isLink: false
-      },
-      {
-        value: data.transaction_link,
-        isLink: true
+      setSgidVerified(dataOne[0].sgid_verified);
+
+      // Retrieve transactions
+      const { data: dataTwo, error: errorTwo } = await supabaseClient
+        .from("transactions")
+        .select()
+        .order("created_at", { ascending: false });
+
+      if (!errorTwo) {
+        let chartDataArr = chartLabels.map((data) => 0);
+        setTransactions(
+          dataTwo.map((data) => {
+            // Format data for the table
+            const formattedDate = dayjs(data.created_at).format(
+              "MMM DD, YYYY h:mm A"
+            );
+            chartLabels.every((month, index) => {
+              if (formattedDate.includes(month)) {
+                chartDataArr[index] += data.co_emission;
+                return false;
+              }
+              return true;
+            });
+
+            return [
+              {
+                value: (
+                  <p>
+                    + ${data.co_emission} <sub>kg</sub>
+                  </p>
+                ),
+                isLink: false
+              },
+              {
+                value: loadMerchantImage(data.merchant),
+                isLink: false
+              },
+              {
+                value: formattedDate,
+                isLink: false
+              },
+              {
+                value: data.transaction_link,
+                isLink: true
+              }
+            ];
+          })
+        );
+
+        setRawChartData(chartDataArr);
+        setTotalCO(chartDataArr.reduce((a, b) => a + b, 0));
       }
-    ]);
+      console.log(dataTwo);
+    })();
   }, []);
 
   const tableCol = [
     {
-      name: "CO2 Emission"
+      name: (
+        <p>
+          CO<sub>2</sub> Emission
+        </p>
+      )
     },
     {
       name: "Merchant"
@@ -86,25 +156,63 @@ const Dashboard = () => {
     }
   ];
 
+  // Chart
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Tooltip,
+    Filler,
+    Legend
+  );
+
   return (
     <MainLayout title={"Dashboard | EcoCart"}>
       {sgidVerified ? (
         <div className="max-w-screen-xl flex flex-col m-auto justify-center px-16">
-          <div className="mt-10">
-            <h1 className="text-display-md font-semibold">
-              Welcome back, {userInfo.name}
+          <div className="mt-5">
+            <h1 className="text-display-sm font-semibold">
+              Welcome back, {user.user_metadata.name}
             </h1>
             <p className="text-md text-gray-600">
               Track and manage your carbon footprint from your shopping
               transactions.
             </p>
-            <p className="text-sm text-gray-300">{userInfo.uniqueId}</p>
           </div>
-          <div className="flex w-full">
-            {mockTransactions ? (
-              <Table columns={tableCol} tableRows={mockTransactions} />
+          <div className="mt-8">
+            <h2 className="text-lg font-semibold text-gray-500">
+              Total CO<sub>2</sub> Consumption
+            </h2>
+            <p></p>
+            <h1 className="text-display-sm font-bold text-gray-900">
+              {totalCO} <sub>kg</sub>
+            </h1>
+            <Line
+              className="mt-5"
+              height={50}
+              id="canvas"
+              options={chartOptions}
+              data={{
+                ...chartData,
+                datasets: [
+                  {
+                    ...chartData.datasets[0],
+                    data: rawChartData
+                  }
+                ]
+              }}
+            />
+          </div>
+          <hr className="h-px w-full mt-8 bg-gray-300 border-0" />
+          <div className="flex flex-col w-full mt-8 mb-16">
+            <h1 className="mb-4 font-semibold text-xl">
+              Shopping Transactions
+            </h1>
+            {transactions.length ? (
+              <Table columns={tableCol} rows={transactions} />
             ) : (
-              "No data"
+              "No data."
             )}
           </div>
         </div>
