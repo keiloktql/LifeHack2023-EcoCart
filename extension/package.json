@@ -1,7 +1,7 @@
 {
-  "name": "chrome-extension-vanilla-js",
+  "name": "extension",
   "version": "0.0.0",
-  "author": "",
+  "author": "**",
   "description": "",
   "type": "module",
   "license": "MIT",
@@ -16,7 +16,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "rm -rf build && vite build",
     "preview": "vite preview",
     "fmt": "prettier --write '**/*.{js,json,css,scss,md}'"
   },
