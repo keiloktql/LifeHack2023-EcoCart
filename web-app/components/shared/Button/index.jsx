@@ -26,9 +26,14 @@ const Button = ({
       }`}
     >
       {loading ? (
-        <svg className="h-6 w-6 animate-spin text-white" viewBox="0 0 24 24">
+        <svg
+          className={`h-6 w-6 animate-spin text-white ${
+            variation === "EMPTY" ? "text-gray" : "text-white"
+          }`}
+          viewBox="0 0 24 24"
+        >
           <circle
-            className="opacity-25"
+            className={`${variation === "EMPTY" ? "opacity-0" : "opacity-25"}`}
             cx="12"
             cy="12"
             r="10"

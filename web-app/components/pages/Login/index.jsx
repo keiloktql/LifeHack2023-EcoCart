@@ -2,34 +2,31 @@
 /* eslint-disable no-unused-vars */
 import Image from "next/image";
 import React, { useState } from "react";
-import * as Yup from "yup";
 import MainLayout from "@/components/layout/MainLayout";
 import LogoRaw from "@/public/assets/svg/logo-raw.svg";
-import LogoSGID from "@/public/assets/img/logo-sgid.png";
+import IconGoogle from "@/public/assets/svg/icon-google.svg";
 import Button from "@/components/shared/Button";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
-import useAuth from "@/hooks/useAuth";
+import { BASE_URL } from "@/config/constants";
 
 const Login = () => {
-  const validationSchema = Yup.object().shape({
-    email: Yup.string().email("Invalid format.").required("Required field."),
-    password: Yup.string().required("Required field.")
-  });
   const router = useRouter();
   const supabaseClient = useSupabaseClient();
   const [loading, setLoading] = useState(false);
   const [smh, setSmh] = useState(false); // flag to trigger form shaking animation
-  const { auth, setAuth } = useAuth();
   const user = useUser();
 
-  const onSubmitFn = async ({ email, password }) => {
+  const onSubmitFn = async () => {
     setLoading(true);
-    const { error } = await supabaseClient.auth.signInWithPassword({
-      email,
-      password
+    const { data, error } = await supabaseClient.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${BASE_URL}/dashboard`
+      }
     });
+    console.log(data);
     if (error) {
       setSmh(true);
       toast.error("An error has occured.");
@@ -57,10 +54,12 @@ const Login = () => {
           <Button
             variation="EMPTY"
             customClassName="mt-8 flex w-full items-center"
-            onClickFn={() => router.push(`/api/auth-url`)}
+            onClickFn={onSubmitFn}
+            loading={loading}
+            disabled={loading}
           >
-            Login with{" "}
-            <Image className="ml-2" src={LogoSGID} width={40} alt="SGID" />
+            <Image className="mr-4" src={IconGoogle} width={20} alt="Google" />
+            Login with Google{" "}
           </Button>
           <p className="mt-8 text-sm text-gray-400 text-center">
             If you do not have an EcoCart account yet, it will automatically be
