@@ -1,5 +1,9 @@
-import { initializeStorageWithDefaults } from './storage';
-
+import {
+  getStorageData,
+  getStorageItem,
+  initializeStorageWithDefaults,
+} from './storage';
+console.log('service worker running');
 chrome.runtime.onInstalled.addListener(async () => {
   // Here goes everything you want to execute after extension initialization
 
@@ -97,6 +101,7 @@ const setTokens = async (
 ) => {
   // once the tab is loaded
   if (tab.status === 'complete') {
+    console.log('test');
     if (!tab.url) return;
     const url = new URL(tab.url);
 
@@ -104,13 +109,18 @@ const setTokens = async (
     // url should look like this: https://my.webapp.com/#access_token=zI1NiIsInR5c&expires_in=3600&provider_token=ya29.a0AVelGEwL6L&refresh_token=GEBzW2vz0q0s2pww&token_type=bearer
     // parse access_token and refresh_token from query string params
     if (url.origin === 'https://ecocart-lifehack2023.netlify.app') {
-      const params = new URL(url.href).searchParams;
-      const accessToken = params.get('accessToken');
-      const refreshToken = params.get('refreshToken');
+      const params = new URL(url.href).hash;
+      const hash = params.substring(1);
+      const result = hash.split('&').reduce(function (res, item) {
+        const parts = item.split('=');
+        res[parts[0]] = parts[1];
+        return res;
+      }, {});
+      const accessToken = result['access_token'];
+      const refreshToken = result['refresh_token'];
 
       if (accessToken && refreshToken) {
         if (!tab.id) return;
-
         // we can close that tab now
         await chrome.tabs.remove(tab.id);
 
@@ -121,6 +131,8 @@ const setTokens = async (
         await chrome.storage.sync.set({
           [chromeStorageKeys.gauthRefreshToken]: refreshToken,
         });
+        const test = await getStorageData();
+        console.log(test);
 
         // remove tab listener as tokens are set
         chrome.tabs.onUpdated.removeListener(setTokens);

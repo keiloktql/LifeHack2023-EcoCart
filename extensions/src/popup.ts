@@ -1,13 +1,16 @@
 import '../styles/popup.scss';
 import { createClient, User } from '@supabase/supabase-js';
+import { getStorageData } from './storage';
 
-getCurrentUser().then((resp) => {
-  if (resp) {
-    console.log('user id:', resp.user.id);
-  } else {
-    console.log('user is not found');
-  }
-});
+window.onload = function () {
+  getCurrentUser().then((resp) => {
+    if (resp) {
+      console.log('user id:', resp.user.id);
+    } else {
+      console.log('user is not found');
+    }
+  });
+};
 
 document.getElementById('go-to-options').addEventListener('click', () => {
   chrome.runtime.openOptionsPage();
@@ -15,7 +18,6 @@ document.getElementById('go-to-options').addEventListener('click', () => {
 document
   .querySelector('.login-btn-auth')
   .addEventListener('click', async function () {
-    console.log('ran here 2');
     await signInWithGoogle();
   });
 
@@ -40,26 +42,12 @@ export async function signInWithGoogle() {
     payload: { url: data.url }, // url is something like: https://[project_id].supabase.co/auth/v1/authorize?provider=google
   });
 }
-const chromeStorageKeys: any = {
-  gauthAccessToken: 'gauthAccessToken',
-  gauthRefreshToken: 'gauthRefreshToken',
-};
 
 export async function getCurrentUser(): Promise<null | {
   user: User;
   accessToken: string;
 }> {
-  chrome.storage.sync.get(null, function (items) {
-    const allKeys = Object.keys(items);
-    console.log(allKeys);
-  });
-  const gauthAccessToken = chrome.storage.sync.get(
-    chromeStorageKeys.gauthAccessToken,
-  )[chromeStorageKeys.gauthAccessToken];
-  const gauthRefreshToken = chrome.storage.sync.get(
-    chromeStorageKeys.gauthRefreshToken,
-  )[chromeStorageKeys.gauthRefreshToken];
-
+  const { gauthAccessToken, gauthRefreshToken }: any = await getStorageData();
   if (gauthAccessToken && gauthRefreshToken) {
     try {
       // set user session from access_token and refresh_token
