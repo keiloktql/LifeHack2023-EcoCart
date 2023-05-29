@@ -1,216 +1,395 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+const stringSimilarity = require('string-similarity');
+
+// Logger
+console.info('chrome-ext template-vanilla-js content script');
+
+// Switch for the popup
+let activePopup = false;
+let counter = 0;
+let theNewssite, haveNetflix, theSport, theHobby;
+const data = {
+    'Apple MacBook Pro 16': {
+        'carbon-footprint': 394000, // in grams
+        'source-url':
+            'https://www.apple.com/environment/pdf/products/notebooks/16-inch_MacBookPro_PER_Nov2019.pdf',
+    },
+    'Apple ipad pro 11': {
+        'carbon-footprint': 119000, // in grams
+        'source-url':
+            'https://www.apple.com/environment/pdf/products/ipad/iPadPro_11-inch_PER_oct2018.pdf',
+    },
+};
+
+// chrome.storage.local.get('newsSite', (data) => {
+//   if (chrome.runtime.lastError) {
+//     return;
+//   }
+//   theNewssite = data.newsSite;
+// });
+// chrome.storage.local.get('netFlix', (data) => {
+//   if (chrome.runtime.lastError) {
+//     return;
+//   }
+//   haveNetflix = data.netFlix;
+// });
+// chrome.storage.local.get('mySport', (data) => {
+//   if (chrome.runtime.lastError) {
+//     return;
+//   }
+//   theSport = data.mySport;
+// });
+// chrome.storage.local.get('myHobby', (data) => {
+//   if (chrome.runtime.lastError) {
+//     return;
+//   }
+//   theHobby = data.myHobby;
+// });
+
+// const makePopup = (function () {
+//   return function (score) {
+//     // Check if element exists, otherwise make one
+//     let poop = document.getElementById('alertPopup');
+//     if (poop) document.getElementById('alertPopup').remove();
+
+//     poop = document.createElement('div');
+//     poop.setAttribute('id', 'alertPopup');
+
+//     document.body.prepend(poop);
+//     document.documentElement.classList.add('alertedPopup');
+
+//     // This would be so much easier with jQuery but lets not load a whole library to do one thing
+//     // $(poop).load("theHtmlFile.html"); though
+//     let request = new XMLHttpRequest();
+
+//     // eslint-disable-next-line no-undef
+//     request.open('GET', chrome.runtime.getURL('overlay.html'), true);
+//     request.onload = function () {
+//       if (request.status >= 200 && request.status < 400) {
+//         let resp = request.responseText;
+//         poop.innerHTML = resp;
+//         genPopup(poop, score);
+//       }
+//     };
+
+//     request.send();
+
+//     const genPopup = function (elem, score) {
+//       const populateNav = function (theNav) {
+//         if (theNav) {
+//           if (haveNetflix)
+//             theNav.innerHTML += '<a href="http://netflix.com">Netflix</a>';
+//           theNav.innerHTML += newsLink(theNewssite);
+//           theNav.innerHTML +=
+//             '<span>' +
+//             theSport[0].toUpperCase() +
+//             theSport.substring(1) +
+//             '</span>';
+//           theNav.innerHTML +=
+//             '<span>' +
+//             theHobby[0].toUpperCase() +
+//             theHobby.substring(1) +
+//             '</span>';
+//         }
+
+//         function newsLink(theNewssite) {
+//           let link;
+//           switch (theNewssite) {
+//             case 'gnn':
+//               link =
+//                 '<a href="http://www.goodnewsnetwork.org">Good News Network</a>';
+//               break;
+//             case 'pn':
+//               link = '<a href="http://www.positive.news">Positive News</a>';
+//               break;
+//             case 'od':
+//               link =
+//                 '<a href="http://www.optimistdaily.com">Optimist Daily</a>';
+//               break;
+//             case 'reddit':
+//               link =
+//                 '<a href="http://reddit.com/r/UpliftingNews">r/UpliftingNews</a>';
+//               break;
+//             default:
+//               link = '';
+//               break;
+//           } //switch
+//           return link;
+//         }
+//       };
+//       // score should range from -0.5 to 0.5 (normalized)
+//       // lower is worse, if 100% turn off
+//       // go back to [0, 1] then subtract
+//       let displayValue = 100 * (1 - (score + 0.5)); // % to display
+//       elem.querySelectorAll('.popupContent .pSc')[0].innerHTML =
+//         displayValue.toFixed(0) + '%';
+//       populateNav(elem.querySelectorAll('.popupContent nav')[0]);
+
+//       let close1 = elem.querySelectorAll('.popupContent .cls')[0];
+//       let close2 = elem.querySelectorAll('.popupContent .fx')[0];
+
+//       close1.style.visibility = 'hidden';
+//       setTimeout(function () {
+//         close1.style.visibility = 'visible';
+//         close2.style.visibility = 'hidden';
+//       }, 10000); //10s timer
+
+//       // Bind events
+//       close1.addEventListener('click', removePopup);
+//       close2.addEventListener('click', forceClosePopup);
+
+//       // Change color if darkmode
+//       let bgColor = window
+//         .getComputedStyle(document.body)
+//         .getPropertyValue('background-color');
+//       document.documentElement.style.setProperty('--background', bgColor);
+//       document.documentElement.style.setProperty(
+//         '--transparency',
+//         'rgba(' + bgColor.split('(')[1].split(')')[0] + ',0.5)',
+//       );
+//       if (!(bgColor == '#ffffff' || bgColor == 'rgb(255, 255, 255)')) {
+//         document.documentElement.style.setProperty('--text', '#ffffff');
+//         document.documentElement.style.setProperty(
+//           '--petalb',
+//           'rgba(255,255,255,0.3)',
+//         );
+//       }
+
+//       if (document.getElementsByClassName('petalbloom')[0] === undefined)
+//         return;
+//       // Kill some plants yo
+//       killFlower(score);
+//     };
+//   };
+// })();
+
+// // Function to kill the plants
+// let killFlower = function (score) {
+//   if (score <= 1)
+//     document.getElementsByClassName('pb1')[0].classList.add('dead');
+//   else document.getElementsByClassName('pb1')[0].classList.remove('dead');
+
+//   if (score <= 2)
+//     document.getElementsByClassName('pb2')[0].classList.add('dead');
+//   else document.getElementsByClassName('pb2')[0].classList.remove('dead');
+
+//   if (score <= 3)
+//     document.getElementsByClassName('pb3')[0].classList.add('dead');
+//   else document.getElementsByClassName('pb3')[0].classList.remove('dead');
+
+//   if (score <= 4)
+//     document.getElementsByClassName('pb4')[0].classList.add('dead');
+//   else document.getElementsByClassName('pb4')[0].classList.remove('dead');
+
+//   if (score <= 5)
+//     document.getElementsByClassName('pb5')[0].classList.add('dead');
+//   else document.getElementsByClassName('pb5')[0].classList.remove('dead');
+// };
+
+// // Function to regen petals over time
+// let tHnd; // global so that I can turn it off elsewhere
+
+// // Function to remove the popup gently and reset the score
+// let removePopup = function () {
+//   let thePopup = document.getElementById('alertPopup');
+//   if (thePopup) thePopup.remove();
+
+//   document.documentElement.classList.remove('alertedPopup');
+
+//   // Reset score
+//   totalScore = 0;
+//   activePopup = false;
+//   counter = 0;
+// };
+
+// // Function to force the popup to close
+// let forceClosePopup = function () {
+//   let thePopup = document.getElementById('alertPopup');
+//   if (thePopup) thePopup.remove();
+
+//   document.documentElement.classList.remove('alertedPopup');
+
+//   // Turn off the popup trigger
+//   activePopup = false;
+
+//   // Set timer to turn it on again
+//   activePopup = setTimeout(function () {
+//     return true;
+//   }, 10000);
+
+//   // Stop petals from regenerating
+//   clearInterval(tHnd);
+// };
+
 // Get the wrapper element
 function getWrapper() {
     return document.querySelectorAll('div[role="main"]')[0];
 }
 
-// Function to scan for new elements
-let scanDiv = (function () {
-    var MutationObserver =
-        window.MutationObserver || window.WebKitMutationObserver;
-    return function (obj, callback) {
-        if (!obj || obj.nodeType !== 1) return;
-        if (MutationObserver) {
-            var mutationObserver = new MutationObserver(callback);
-            mutationObserver.observe(obj, {
-                childList: true,
-                subtree: false
+// Get a specific element
+function getSpecificElement() {
+    return document.querySelector('div.page-product__content');
+}
+
+function doesProductExistInDatabase(productName) {
+    console.log('>>>', productName);
+    Object.keys(data).forEach((key) => {
+        // Use similarity function to compare product name with product name in database
+        if (similarity(key, productName) > 0.5) {
+            console.log('exists');
+            return {
+                exists: true,
+                key: key,
+            };
+        }
+    });
+
+    return {
+        exists: false,
+        key: null,
+    };
+}
+
+function similarity(s1, s2) {
+    return stringSimilarity.compareTwoStrings(s1, s2);
+}
+
+// Function to call on product page
+const runScriptProductPage = (function () {
+    return async function (wrapper) {
+        try {
+            // letiables
+            const productInformation = {
+                categories: [],
+            };
+
+            const breadcrumbWrapper = wrapper.querySelector(
+                'div.page-product__breadcrumb',
+            );
+            const productWrapper = wrapper.querySelector(
+                '.page-product__detail > div',
+            );
+            const productRowAndColumn = productWrapper.querySelectorAll('div.dR8kXc');
+
+            // Scripting
+            productInformation.categories = Array.from(
+                breadcrumbWrapper.querySelectorAll('a, span'),
+            ).map((breadcrumb) => breadcrumb.innerText);
+            productInformation['Product Name'] =
+                productInformation.categories[productInformation.categories.length - 1];
+            Array.from(productRowAndColumn).forEach((row) => {
+                const title = row.querySelector('label').innerText;
+                const body = row.querySelector('div')?.innerText || '';
+
+                // Check if the body is an empty string, it might be a link / anchor tag
+                if (body === '') {
+                    const anchor = row.querySelector('a');
+                    if (anchor) {
+                        productInformation[title] = anchor.innerText;
+                    }
+                } else {
+                    productInformation[title] = body;
+                }
             });
-            return mutationObserver;
-        } else if (window.addEventListener) {
-            obj.addEventListener("DOMNodeInserted", callback, false);
-            obj.addEventListener("DOMNodeRemoved", callback, false);
+
+            const productTitleWrapper = wrapper.querySelector('._44qnta');
+            document.querySelector('div[id="ecocart-flag"]')?.remove();
+
+            const { exists, key } = doesProductExistInDatabase(
+                productInformation['Product Name'],
+            );
+            productTitleWrapper.parentElement.prepend(
+                await addReinforcement(exists, key, productInformation),
+            );
+            // makePopup(0.2);
+        } catch (err) {
+            console.log(err);
         }
     };
 })();
 
-// Get the text content from the scanDiv wrapper
-let getTextContent = (function () {
-    return function (el) {
-        // Only proceed if query success, otherwise return empty string
-        if (el) {
-            let blockInnerTextContent = el.querySelectorAll(
-                'div[data-content-editable-leaf="true"]'
-            )[0];
-            if (blockInnerTextContent) return blockInnerTextContent.innerText;
-            else return "";
-        } else return "";
-    };
-})();
+// Insert banner into the page
+const addReinforcement = async function (
+    dataExistInDatabase,
+    key,
+    productInformation = {},
+) {
+    console.log(dataExistInDatabase, key);
+    const node = document.createElement('div');
+    const productName = productInformation['Product Name'];
+    // If product exists in database
+    const carbonFootprint = dataExistInDatabase
+        ? data[key]['carbon-footprint']
+        : '';
+    const link = dataExistInDatabase ? data[key]['source-url'] : '';
+    console.log('>>>>>>>', productName, carbonFootprint, link);
 
-let setTextContent = (el, text) => {
-    let blockContent = el.querySelectorAll(
-        'div[data-content-editable-leaf="true"]'
-    )[0];
-    window.alert("blockContent: " + "clicked");
-    blockContent.innerText = "Clicked!";
+    const content = `
+    <div id="ecocart-flag" class="ecocart-banner" style="border: 1px solid let(--petalc); color: let(--petalc); background: #CBF0C1; /* padding: 1rem; */ font: 0.9rem sans-serif; width: 100%; margin-bottom: 1rem; padding-left: 1rem; padding-top: 1rem; padding-bottom: 1rem; border-radius: 5px;">
+      <div style="display: flex; justify-content: center; align-items: center;">
+        <img src="https://ecocart-lifehack2023.netlify.app/favicon.ico" style="height: 17px; width: 17px; margin-right: 10px;" />
+        <h1 style="font-size: 12px;">EcoCart</h1>
+      </div>  
+      <span style="display: flex; justify-content: center; align-items: center;">
+        <p style="text-align: center;">
+          Did you the process of making '${productInformation['Product Name']
+        }' produces <b>${dataExistInDatabase ? data[key]['carbon-footprint'] : ''
+        }</b> of CO2? That is equivalent to driving a car (10km) or charging your phone (1000 times)!
+        </p>
+        ${dataExistInDatabase
+            ? `<span class="tooltip">
+            <img src="https://w7.pngwing.com/pngs/910/897/png-transparent-twitter-verified-badge-hd-logo.png" style="height: 17px; width: 17px; margin-right: 10px;">
+            <span class="tooltiptext">Source from <a style="color: #79afe0; text-decoration: underline; " href="${link}" target="_blank" rel="noopener noreferrer">CO2</a></span>
+          </span>`
+            : ''
+        }
+      </span>
+    </div>`;
+
+    node.innerHTML = content;
+
+    return node;
 };
 
-// Function to append advisory
-let addWarning = (function () {
-    return async function (el, score) {
-        console.log(el);
-        // addCardToSidebar(el, score);
-        // Get the tweet from this element
-        let blockInnerTextContent = el.querySelectorAll(
-            'div[data-content-editable-leaf="true"]'
-        )[0];
+const waitFor = function (letSetter, sleepTime, condition, continuation) {
+    const letiable = letSetter();
 
-        blockInnerTextContent.style.color = "red";
-        blockInnerTextContent.addEventListener("click", () => {
-            getNewGeneratedContentForReplacement(blockInnerTextContent);
-        });
-
-        return;
-    };
-})();
-
-async function getNewGeneratedContentForReplacement(currentNode) {
-
-}
-
-async function getBlockTextContentRiskScore(blockText) {
-    // Return a random between 0 to 50
-    try {
-        console.log("Raw texts", blockText);
-        const resp = await fetch("http://localhost:8080/api/v1/detect", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                text: blockText
-            })
-        });
-
-        const result = await resp.json();
-        console.log(result.result);
-        return Promise.resolve(result.result);
-    } catch (error) {
-        console.log(error);
-        return Promise.reject(error);
+    if (!condition(letiable)) {
+        setTimeout(
+            () => waitFor(letSetter, sleepTime, condition, continuation),
+            sleepTime,
+        );
+    } else {
+        continuation(letiable);
     }
-}
-
-// Function to call for each element of the homepage
-let runScript = (function () {
-    return async function (allNodes) {
-        // Cast allNodes to an array
-        allNodes = Array.from(allNodes);
-        let promises = allNodes.map(async (node, i) => {
-            // Reset score
-            let score = 0;
-            // Get block's text content for analysis
-            let blockTextContent = getTextContent(node);
-            // Make backend call to identify if content might be generated by a bot
-            blockTextRiskScore = await getBlockTextContentRiskScore(
-                blockTextContent
-            );
-
-            // Log score of content
-            console.log(
-                "Paragraph has a risk score eval of: " + blockTextRiskScore
-            );
-
-            console.log("blockTextRiskScore", blockTextRiskScore);
-            console.log("threshold", threshold);
-            if (blockTextRiskScore < threshold) {
-                console.log("THIS IS BEING INVOKED! INDEED!");
-                addWarning(node, score);
-            }
-            return blockTextRiskScore;
-        });
-        let allScores = await Promise.all(promises);
-        return allScores;
-    };
-})();
-
-// Function to call on product page
-let runScriptProductPage = (function () {
-    return async function (wrapper) {
-        const categories = Array.from(wrapper.querySelectorAll(".page-product__breadcrumb > a, span")).map((breadcrumb) => {
-            return breadcrumb.innerText;
-        });
-
-        const productRowAndColumn = wrapper.querySelector(".product-detail");
-        console.log({
-            categories,
-        });
-        console.log(">>>", productRowAndColumn);
-    };
-})();
+};
 
 const loadCss = function () {
-    let $ = document;
-    let head = $.getElementsByTagName("head")[0];
-    let link = $.createElement("link");
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    link.href = chrome.runtime.getURL("contentStyle.css");
-    link.media = "all";
+    const $ = document;
+    const head = $.getElementsByTagName('head')[0];
+    const link = $.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = chrome.runtime.getURL('overlay.css');
+    link.media = 'all';
     head.appendChild(link);
 };
 
-const waitFor = function (
-    varSetter,
-    sleepTime,
-    condition,
-    continuation
-) {
-    let variable = varSetter();
-    if (!condition(variable)) {
-        setTimeout(
-            () => waitFor(varSetter, sleepTime, condition, continuation),
-            sleepTime
-        );
-    } else {
-        continuation(variable);
-    }
-};
+(() => {
+    waitFor(
+        getSpecificElement,
+        1000,
+        (wrapper) =>
+            wrapper !== null &&
+            wrapper.querySelector('.page-product__detail') !== null,
+        function () {
+            // Check if the url is a product page or search page by checking the url
+            const url = window.location.href;
+            const isSearchPage = url.includes('search');
 
-waitFor(
-    getWrapper,
-    1000,
-    (wrapper) => wrapper !== undefined,
-    function (wrapper) {
-        // Pre-load CSS
-        // loadCss();
-
-        // Check if the url is a product page or search page by checking the url
-        const url = window.location.href;
-        const isSearchPage = url.includes("search");
-
-        if (!isSearchPage) {
-            runScriptProductPage(wrapper);
-        }
-
-        // Product specific pages
-
-        // loadCss();
-
-        // Observe for changes of wrapper's child nodes
-        // (() => {
-        //     scanDiv(wrapper, function (el) {
-        //         var addedNodes = [],
-        //             removedNodes = [];
-
-        //         // Record down added divs
-        //         el.forEach((record) => {
-        //             record.addedNodes.length &
-        //                 addedNodes.push(...record.addedNodes);
-        //         });
-
-        //         // Record down deleted divs
-        //         el.forEach(
-        //             (record) =>
-        //                 record.removedNodes.length &
-        //                 removedNodes.push(...record.removedNodes)
-        //         );
-
-        //         // Run the script for added nodes
-        //         runScript(addedNodes);
-
-        //         console.log("Added:", addedNodes, "Removed:", removedNodes);
-        //     });
-        // })();
-    }
-);
+            loadCss();
+            if (!isSearchPage) runScriptProductPage(getWrapper());
+        },
+    );
+})();

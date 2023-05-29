@@ -38,7 +38,8 @@
   "dependencies": {
     "@babel/runtime": "^7.18.6",
     "@supabase/supabase-js": "^2.23.0",
-    "normalize.css": "^8.0.1"
+    "normalize.css": "^8.0.1",
+    "string-similarity": "^4.0.4"
   },
   "browserslist": "> 0.25%, not dead",
   "husky": {
