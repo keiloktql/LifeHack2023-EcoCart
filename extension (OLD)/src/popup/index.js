@@ -12,9 +12,9 @@ document.querySelector('#app').innerHTML = `
             <p>AI Powered Sustainable Shopping Companion</p>
         </div>
     </div>
-    <button>Login with Google</button>
+    <button class="login-btn-auth" type="button">Login</button>
     <hr />
-    <div className="Footer">
+    <div class="Footer">
         <p>Made with &#9829; from Singapore.</p>
     </div>
   </div>
