@@ -16,7 +16,6 @@ const runScriptProductPage = (function () {
     const breadcrumbWrapper = wrapper.querySelector("div.page-product__breadcrumb");
     const productWrapper = wrapper.querySelectorAll("div.product-detail > div")[0];
     const productRowAndColumn = productWrapper.querySelectorAll("div.dR8kXc");
-    console.log(productRowAndColumn);
 
     // Scripting
     productInformation.categories = Array.from(breadcrumbWrapper.querySelectorAll("a, span")).map((breadcrumb) => {
@@ -28,9 +27,6 @@ const runScriptProductPage = (function () {
       const body = (row.querySelector("div") && row.querySelector("div").innerText) || "";
       productInformation[title] = body;
     });
-    // Get the first child of the product wrapper
-    // const productRowAndColumn = productWrapper.children[0];
-    console.log(productInformation);
   };
 })();
 
@@ -53,20 +49,30 @@ const waitFor = function (
   }
 };
 
-(() => {
-  waitFor(
-    getWrapper,
-    3000,
-    (wrapper) => wrapper !== undefined,
-    function (wrapper) {
-      // check if loading is done
-      console.log("wrapper", wrapper);
-      // Check if the url is a product page or search page by checking the url
-      const url = window.location.href;
-      const isSearchPage = url.includes("search");
+const loadCss = function () {
+  var $ = document;
+  var head = $.getElementsByTagName('head')[0];
+  var link = $.createElement('link');
+  link.rel = 'stylesheet';
+  link.type = 'text/css';
+  link.href = chrome.runtime.getURL('popup.css');
+  link.media = 'all';
+  head.appendChild(link);
+};
 
-      if (!isSearchPage) runScriptProductPage(wrapper);
-    });
-})();
+waitFor(
+  getWrapper,
+  3000,
+  (wrapper) => wrapper !== undefined,
+  function (wrapper) {
+    // check if loading is done
+    console.log("wrapper", wrapper);
+    // Check if the url is a product page or search page by checking the url
+    const url = window.location.href;
+    const isSearchPage = url.includes("search");
+
+    if (!isSearchPage) runScriptProductPage(wrapper);
+  }
+);
 
 export { };

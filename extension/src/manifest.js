@@ -20,12 +20,12 @@ export default defineManifest({
     service_worker: 'src/background/index.js',
     type: 'module',
   },
-  // content_scripts: [
-  //   {
-  //     matches: ['http://*/*', 'https://*/*'],
-  //     js: ['src/content/index.js'],
-  //   },
-  // ],
+  content_scripts: [
+    {
+      matches: ['http://*/*', 'https://*/*'],
+      js: ['src/content/index.js'],
+    },
+  ],
   web_accessible_resources: [
     {
       resources: ['img/logo-16.png', 'img/logo-34.png', 'img/logo-48.png', 'img/logo-128.png'],
