@@ -4,7 +4,7 @@
 (() => {
   function getWrapper(): Element | null {
     try {
-      const wrapper = document.querySelector('div.container');
+      const wrapper = document.querySelector('div > .rnocow');
       if (wrapper === null) {
         throw new Error('Wrapper element not found');
       }
@@ -26,13 +26,24 @@
     // Make a node a button
     node.innerHTML = `
               <span class="btn__content">
-                  <span class="btn__text">Calculate Carbon Footprint</span>
+                  <span class="btn__text">Checkout</span>
               </span>
           `;
     // Insert the button before the checkout button if there are no existing buttons with the same id
     if (checkoutFooter.querySelector('#ecocart-button') === null) {
       // Insert it before the last child
       checkoutFooter.insertBefore(node, checkoutFooter.lastChild);
+      node.addEventListener('click', () => {
+        console.log('clicked');
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        // set opacity to 0.5
+        node.style.opacity = 0.5;
+        node.innerText = 'Processing...';
+        node.disabled = true;
+      });
+      // Destroy the last child
+      checkoutFooter.removeChild(checkoutFooter.lastChild);
     }
   };
 
