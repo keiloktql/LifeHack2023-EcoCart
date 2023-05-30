@@ -41,6 +41,25 @@ Resources:
       DockerTag: python3.9
       DockerContext: functions/generate-product-co-message
       Dockerfile: Dockerfile
+  CalculateTotalCO:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: >
+        Function to calculate total Product Carbon Emission
+        By querying GPT 3.5-Turbo
+      PackageType: Image
+      Architectures:
+        - x86_64
+      Events:
+        postOpenAI:
+          Type: Api
+          Properties:
+            Path: /calculate-total-co
+            Method: post
+    Metadata:
+      DockerTag: python3.9
+      DockerContext: functions/calculate-total-co
+      Dockerfile: Dockerfile
 
 # Outputs:
 #   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

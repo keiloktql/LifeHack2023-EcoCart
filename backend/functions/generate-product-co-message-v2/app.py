@@ -1,8 +1,10 @@
+'''Lambda to generate a fun-fact related to environmental conservation,
+related to the given product title'''
 # packages
 import json
 import openai
 from decouple import config
-import re
+import boto3
 
 # modules
 from src.logger import logger
@@ -10,13 +12,21 @@ from src.logger import logger
 openai.api_key = config("OPENAI_API_KEY")
 
 PROMPT_TEMPLATE = """
-Provide the total estimated carbon footprint of the given products:
-{product_titles}
-No matter what, you must give a rough estimate of the value of CO2 produced, infer from product titles and product type e.g. phones and electronics.
+Give a fun-fact related to environmental conservation, related to the given product.
+XXX refers to an estimated quantitative value.
+Product title: {product_title}
+Product categories: {categories}.
+Give an answer no matter what, give a rough estimate based on the product and categories.
+Or else, give a random fun-fact related to environmental conservation based on the product and categories.
+No matter what, you must give a rough estimate of the value of CO2 produced, infer from product and categories.
 
 Reply in the following template:
-Carbon Footprint: XXX kg CO2
+Did you know the process of making {product_title} produces XXX of CO2 g?
+That is equivalent to XXX cigarettes, XXX car miles, XXX smartphone charges!
 """
+
+# --------------- Python AWS SDK ------------------
+rekognition = boto3.client('rekognition', region_name='ap-southeast-1')
 
 def lambda_handler(event, context):
     """
@@ -35,12 +45,21 @@ def lambda_handler(event, context):
     if not isinstance(body, dict):
         body = json.loads(body)
 
-    product_titles = body.get("product_titles") # list
-    assert type(product_titles) == list, "product_titles must be a list"
-    assert len(product_titles) > 0, "product_titles must not be empty"
+    categories = body.get("categories") # list
+    assert isinstance(categories, list), "categories must be a list"
+    assert len(categories) > 0, "categories must not be empty"
+    product_title = body.get("product_title") # string
+    assert isinstance(product_title, str), "product_title must be a string"
+    assert len(product_title) > 0, "product_title must not be empty"
+    base64_image = body.get("base64_image") # string.
+    assert isinstance(base64_image, str), "base64_image must be a string"
+    assert len(base64_image) > 0, "base64_image must not be empty"
+
+    # Categories preprocessing
+    categories = ", ".join(categories)
 
     # ----- QUERY GPT SECTION -----
-    prompt = PROMPT_TEMPLATE.format(product_titles=product_titles)
+    prompt = PROMPT_TEMPLATE.format(categories=categories, product_title=product_title)
     try:
         completion = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -52,18 +71,6 @@ def lambda_handler(event, context):
         completion_content = completion.choices[0].message.get("content")
         logger.info(f"GPT 3.5-Turbo Reply:\n{completion_content}")
 
-        # ----- POST-PROCESSING SECTION -----
-        # Search for the first match of the regex
-        match = re.search(
-            r"(\d{1,3}) kg CO2", completion_content
-        )
-        if match:
-            co2_footprint = int(match.group(1))
-            logger.info(f"CO2 Footprint: {co2_footprint}")
-        else:
-            co2_footprint = 0
-            logger.error("CO2 Footprint not found")
-
         # Response
         response = {
             "statusCode": 200,
@@ -73,7 +80,6 @@ def lambda_handler(event, context):
             "body": json.dumps(
                 {
                     "completion_content": completion_content,
-                    "co2_footprint": co2_footprint,
                 }
             )
         }
