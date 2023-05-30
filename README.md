@@ -5,7 +5,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/keiloktql/LifeHack2023-EcoCart">
-    <img src="webapp/public/android-chrome-512x512.png" alt="Logo" width="120" height="120">
+    <img src="web-app/public/android-chrome-512x512.png" alt="Logo" width="120" height="120">
   </a>
 
 <h3 align="center">EcoCart</h3>
