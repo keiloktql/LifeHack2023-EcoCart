@@ -5,7 +5,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/keiloktql/LifeHack2023-EcoCart">
-    <img src="assets/robin-hood-bg.png" alt="Logo" width="120" height="120">
+    <img src="webapp/public/android-chrome-512x512.png" alt="Logo" width="120" height="120">
   </a>
 
 <h3 align="center">EcoCart</h3>
@@ -32,6 +32,7 @@
 - [License](#license)
 - [Contact](#contact)
 - [References](#references)
+- [More Images](#more-images)
 
 <!-- ABOUT THE PROJECT -->
 
@@ -76,15 +77,15 @@ Please view the readme in the respective folders
 
 ### Browser Extension
 
-<a href="extensions/readme.md">Browser Extension readme.md</a>
+<a href="extensions/README.md">Browser Extension README.md</a>
 
 ### Dashboard Web App
 
-<a href="web-app/readme.md">Dashboard Web App readme.md</a>
+<a href="web-app/README.md">Dashboard Web App README.md</a>
 
 ### OpenAI API
 
-<a href="backend/readme.md">OpenAI API readme.md</a>
+<a href="backend/README.md">OpenAI API README.md</a>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -146,6 +147,8 @@ Project Link: [https://github.com/keiloktql/LifeHack2023-EcoCart](https://github
 - [OpenAI's GPT-3](https://openai.com/api/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
+## More Images
 
 ![](https://github.com/keiloktql/LifeHack2023-EcoCart/blob/main/promotion/poster-2.png)
 
