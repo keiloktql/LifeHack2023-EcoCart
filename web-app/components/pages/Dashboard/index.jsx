@@ -108,7 +108,7 @@ const Dashboard = () => {
               {
                 value: (
                   <p>
-                    + ${data.co_emission} <sub>kg</sub>
+                    + ${data.co_emission} <sub>g</sub>
                   </p>
                 ),
                 isLink: false
@@ -186,7 +186,7 @@ const Dashboard = () => {
             </h2>
             <p></p>
             <h1 className="text-display-sm font-bold text-gray-900">
-              {totalCO} <sub>kg</sub>
+              {totalCO} <sub>g</sub>
             </h1>
             <Line
               className="mt-5"
