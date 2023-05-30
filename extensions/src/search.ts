@@ -61,14 +61,15 @@ const PREFERRED_BRANDS = [
               // Prepend the pill to the card
               const pill = document.createElement('div');
               pill.innerHTML = `
-              <div class="shopee-icon-button shopee-icon-button--inactive shopee-icon-button--small shopee-icon-button--circle">
-                    <div class="shopee-icon-button__icon">
-                        Preferred Brand
-                    </div>
-                </div>
+                  <div style="color: #084C2E; width: 100%; border-radius: 3px; border: 1px solid #099250; white-space: nowrap; display: inline-block; font-size: 0.8em; padding: 0.125rem 0.25rem; text-align: center; margin-bottom: 10px;">
+                  <img src="https://ecocart-lifehack2023.netlify.app/favicon.ico" style="height: 10px; width: 10px; margin-right: 5px;" />
+                      EcoCart Preferred
+                  </div>
                 `;
               card.querySelector('.hpDKMN')?.prepend(pill);
-              card.style.backgroundColor = 'green';
+              card.querySelector('.hpDKMN').style =
+                'display: flex; flex-direction: column; height: 100%; align-items: start; justify-content: flex-end';
+              card.querySelector('.rVLWG6').style = 'flex-grow: 0';
 
               // if the user clicks on the card, add score to the user in chrome storage
               card.addEventListener('click', async () => {

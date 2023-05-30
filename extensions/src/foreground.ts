@@ -276,17 +276,8 @@ const addReinforcement = async function (
 ) {
   const node = document.createElement('div');
   node.innerHTML = `
-    <div id="ecocart-flag" class="ecocart-banner" style="border: 1px solid let(--petalc); color: let(--petalc); background: #CBF0C1; /* padding: 1rem; */ font: 0.9rem sans-serif; width: 100%; margin-bottom: 1rem; padding-left: 1rem; padding-top: 1rem; padding-bottom: 1rem; border-radius: 5px;">
-      <div style="display: flex; justify-content: center; align-items: center;">
-        <img src="https://ecocart-lifehack2023.netlify.app/favicon.ico" style="height: 17px; width: 17px; margin-right: 10px;" />
-        <h1 style="font-size: 12px;">EcoCart</h1>
-      </div>  
+    <div id="ecocart-flag" class="ecocart-banner" style="border: 1px solid let(--petalc); color: let(--petalc); background: #CBF0C1; padding: 1rem; font: 0.9rem sans-serif; margin-bottom: 1rem; padding-left: 1rem; padding-top: 1rem; padding-bottom: 1rem; border-radius: 5px;">
       <span style="display: flex; justify-content: center; align-items: center;">
-        <p style="text-align: center;">
-          Did you the process of making '${
-            productInformation['Product Name']
-          }' produces <b>1000kg</b> of CO2? That is equivalent to driving a car (10km) or charging your phone (1000 times)!
-        </p>
         ${
           dataExistInDatabase &&
           `<span class="tooltip">
@@ -294,7 +285,16 @@ const addReinforcement = async function (
             <span class="tooltiptext">Source from <a style="color: #79afe0; text-decoration: underline; " href="https://www.co2everything.com" target="_blank" rel="noopener noreferrer">CO2</a></span>
           </span>`
         }
+        <p>
+          Did you the process of making '${
+            productInformation['Product Name']
+          }' produces <b>1000kg</b> of CO2? That is equivalent to driving a car (10km) or charging your phone (1000 times)!
+        </p>
       </span>
+      <div style="display: flex; justify-content: flex-end; align-items: center;">
+        <img src="https://ecocart-lifehack2023.netlify.app/favicon.ico" style="height: 17px; width: 17px; margin-right: 10px;" />
+        <h1 style="font-size: 12px;">EcoCart</h1>
+      </div>  
     </div>`;
 
   return node;
