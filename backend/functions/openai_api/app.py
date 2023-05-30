@@ -1,3 +1,4 @@
+# packages
 import json
 import openai
 from decouple import config
@@ -8,8 +9,13 @@ from src.logger import logger
 openai.api_key = config("OPENAI_API_KEY")
 
 PROMPT_TEMPLATE = """
-How are you doing?
-{query}
+Give a fun-fact related to environmental conservation, related to the given product ({product_title}).
+XXX refers to an estimated quantitative value.
+Do consider the categories: {categories}.
+
+Reply in the following template:
+Did you know the process of making {product_title} produces XXX of CO2?
+That is equivalent to XXX cigarettes, XXX car miles, XXX smartphone charges!
 """
 
 def lambda_handler(event, context):
@@ -25,10 +31,11 @@ def lambda_handler(event, context):
     logger.debug("Event: %s", event)
     body = event.get("body")
 
-    query = body.get("query")
+    categories = body.get("categories")
+    product_title = body.get("product_title")
 
     # ----- QUERY GPT SECTION -----
-    prompt = PROMPT_TEMPLATE.format(query=query)
+    prompt = PROMPT_TEMPLATE.format(categories=categories, product_title=product_title)
     try:
         completion = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -38,7 +45,7 @@ def lambda_handler(event, context):
             frequency_penalty=0.1,
         )
         completion_content = completion.choices[0].message.get("content")
-        logger.info(f"GPT 3.5-Turbo Reply: {completion_content}")
+        logger.info(f"GPT 3.5-Turbo Reply:\n{completion_content}")
 
         # Response
         response = {
