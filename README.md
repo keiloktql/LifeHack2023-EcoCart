@@ -60,6 +60,7 @@ EcoCart promotes sustainable living by combining AI, a user-friendly dashboard, 
 - [Chrome Extension Manifest Version 3](https://developer.chrome.com/docs/extensions/mv3/intro)
 - [Supabase](https://supabase.com)
 - [Amazon Web Service](https://aws.amazon.com)
+- [Docker](https://www.docker.com)
 - [Netlify](https://www.netlify.com)
 - [Figma](https://www.figma.com)
 - [Untitled UI](https://www.untitledui.com)
