@@ -11,7 +11,7 @@ openai.api_key = config("OPENAI_API_KEY")
 PROMPT_TEMPLATE = """
 Give a fun-fact related to environmental conservation, related to the given product ({product_title}).
 XXX refers to an estimated quantitative value.
-Do consider the categories: {categories}.
+Do consider the product categories: {categories}.
 
 Reply in the following template:
 Did you know the process of making {product_title} produces XXX of CO2?
