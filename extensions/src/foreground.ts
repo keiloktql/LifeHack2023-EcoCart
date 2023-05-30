@@ -205,6 +205,24 @@ function doesProductExistInDatabase() {
   return false;
 }
 
+function convertCO2ToUnit(grams) {
+  const units = [
+    { label: 'cigarettes', conversion: 21.8 },
+    { label: 'car miles', conversion: 404 },
+    { label: 'smartphone charges', conversion: 0.5 },
+    // Add more units and their conversion factors as needed
+  ];
+
+  const convertedUnits = units.map((unit) => {
+    // round to 2 decimal places
+    const quantity = Math.round((grams / unit.conversion) * 100) / 100;
+
+    return `${quantity} ${unit.label}`;
+  });
+
+  return convertedUnits;
+}
+
 // Function to call on product pagex
 const runScriptProductPage = (function () {
   return async function (wrapper) {
@@ -274,6 +292,8 @@ const addReinforcement = async function (
   dataExistInDatabase = false,
   productInformation = {},
 ) {
+  const arbitaryNumber = Math.floor(Math.random() * (1000 - 100) + 300);
+  const relativeUnits = convertCO2ToUnit(arbitaryNumber);
   const node = document.createElement('div');
   node.innerHTML = `
     <div id="ecocart-flag" class="ecocart-banner" style="border: 1px solid let(--petalc); color: let(--petalc); background: #CBF0C1; padding: 1rem; font: 0.9rem sans-serif; margin-bottom: 1rem; padding-left: 1rem; padding-top: 1rem; padding-bottom: 1rem; border-radius: 5px;">
@@ -288,7 +308,9 @@ const addReinforcement = async function (
         <p>
           Did you the process of making '${
             productInformation['Product Name']
-          }' produces <b>1000kg</b> of CO2? That is equivalent to driving a car (10km) or charging your phone (1000 times)!
+          }' produces <b>${arbitaryNumber}</b> of CO2? That is equivalent to <b>${relativeUnits.join(
+    ', ',
+  )}</b>!
         </p>
       </span>
       <div style="display: flex; justify-content: flex-end; align-items: center;">
