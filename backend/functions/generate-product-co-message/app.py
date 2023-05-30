@@ -1,3 +1,5 @@
+'''Lambda to generate a fun-fact related to environmental conservation,
+related to the given product title'''
 # packages
 import json
 import openai
@@ -9,13 +11,16 @@ from src.logger import logger
 openai.api_key = config("OPENAI_API_KEY")
 
 PROMPT_TEMPLATE = """
-Give a fun-fact related to environmental conservation, related to the given product ({product_title}).
+Give a fun-fact related to environmental conservation, related to the given product.
 XXX refers to an estimated quantitative value.
-Do consider the product categories: {categories}.
-Give an answer no matter what.
+Product title: {product_title}
+Product categories: {categories}.
+Give an answer no matter what, give a rough estimate based on the product and categories.
+Or else, give a random fun-fact related to environmental conservation based on the product and categories.
+No matter what, you must give a rough estimate of the value of CO2 produced, infer from product and categories.
 
 Reply in the following template:
-Did you know the process of making {product_title} produces XXX of CO2 kg?
+Did you know the process of making {product_title} produces XXX of CO2 g?
 That is equivalent to XXX cigarettes, XXX car miles, XXX smartphone charges!
 """
 
@@ -32,10 +37,19 @@ def lambda_handler(event, context):
     logger.debug("Event: %s", event)
     body = event.get("body")
 
+    # Convert the body to a JSON object
+    if not isinstance(body, dict):
+        body = json.loads(body)
+
     categories = body.get("categories") # list
-    categories = ", ".join(categories)
+    assert isinstance(categories, list), "categories must be a list"
+    assert len(categories) > 0, "categories must not be empty"
     product_title = body.get("product_title") # string
-    
+    assert isinstance(product_title, str), "product_title must be a string"
+    assert len(product_title) > 0, "product_title must not be empty"
+
+    # Categories preprocessing
+    categories = ", ".join(categories)
 
     # ----- QUERY GPT SECTION -----
     prompt = PROMPT_TEMPLATE.format(categories=categories, product_title=product_title)
