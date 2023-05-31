@@ -18,31 +18,17 @@ Parameters:
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 10
+    Timeout: 30
     MemorySize: 128
 
 Resources:
-  # HelloWorldFunction:
-  #   Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-  #   Properties:
-  #     PackageType: Image
-  #     Architectures:
-  #       - x86_64
-  #     Events:
-  #       HelloWorld:
-  #         Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-  #         Properties:
-  #           Path: /hello
-  #           Method: get
-  #   Metadata:
-  #     Dockerfile: Dockerfile
-  #     DockerContext: ./hello_world
-  #     DockerTag: python3.9-v1
-  OpenAIAPIFunction:
+  GenerateProductCOMessage:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: !Join ["-", [!Ref AppName, "GenerateProductCOMessage"]]
       Description: >
-        Boilerplate function to query GPT 3.5-Turbo
+        Function to generate Product Carbon Emission Message
+        By querying GPT 3.5-Turbo
       PackageType: Image
       Architectures:
         - x86_64
@@ -50,11 +36,59 @@ Resources:
         postOpenAI:
           Type: Api
           Properties:
-            Path: /postOpenAI
+            Path: /generate-product-co-message
             Method: post
     Metadata:
       DockerTag: python3.9
-      DockerContext: functions/openai_api
+      DockerContext: functions/generate-product-co-message
+      Dockerfile: Dockerfile
+  GenerateProductCOMessageV2:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Join ["-", [!Ref AppName, "GenerateProductCOMessageV2"]]
+      Description: >
+        Function to generate Product Carbon Emission Message
+        By querying GPT 3.5-Turbo
+      PackageType: Image
+      Architectures:
+        - x86_64
+      Events:
+        postOpenAI:
+          Type: Api
+          Properties:
+            Path: /generate-product-co-message-v2
+            Method: post
+      # Configure IAM Policies
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - "rekognition:*"
+              Resource:
+                - "*"
+    Metadata:
+      DockerTag: python3.9
+      DockerContext: functions/generate-product-co-message-v2
+      Dockerfile: Dockerfile
+  CalculateTotalCO:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Join ["-", [!Ref AppName, "CalculateTotalCO"]]
+      Description: >
+        Function to calculate total Product Carbon Emission
+        By querying GPT 3.5-Turbo
+      PackageType: Image
+      Architectures:
+        - x86_64
+      Events:
+        postOpenAI:
+          Type: Api
+          Properties:
+            Path: /calculate-total-co
+            Method: post
+    Metadata:
+      DockerTag: python3.9
+      DockerContext: functions/calculate-total-co
       Dockerfile: Dockerfile
 
 # Outputs:

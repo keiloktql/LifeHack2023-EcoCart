@@ -1,4 +1,8 @@
+'''lambda function to calculate the total carbon footprint of a list of products'''
+# packages
 import json
+import re
+import random
 import openai
 from decouple import config
 
@@ -8,8 +12,12 @@ from src.logger import logger
 openai.api_key = config("OPENAI_API_KEY")
 
 PROMPT_TEMPLATE = """
-How are you doing?
-{query}
+Provide the total estimated carbon footprint of the given products:
+{product_titles}
+No matter what, you must give a rough estimate of the value of CO2 produced, infer from product titles and product type e.g. phones and electronics.
+
+Reply in the following template:
+Carbon Footprint: XXX kg CO2
 """
 
 def lambda_handler(event, context):
@@ -25,10 +33,16 @@ def lambda_handler(event, context):
     logger.debug("Event: %s", event)
     body = event.get("body")
 
-    query = body.get("query")
+    # Convert the body to a JSON object
+    if not isinstance(body, dict):
+        body = json.loads(body)
+
+    product_titles = body.get("product_titles") # list
+    assert isinstance(product_titles, list), "product_titles must be a list"
+    assert len(product_titles) > 0, "product_titles must not be empty"
 
     # ----- QUERY GPT SECTION -----
-    prompt = PROMPT_TEMPLATE.format(query=query)
+    prompt = PROMPT_TEMPLATE.format(product_titles=product_titles)
     try:
         completion = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -38,7 +52,19 @@ def lambda_handler(event, context):
             frequency_penalty=0.1,
         )
         completion_content = completion.choices[0].message.get("content")
-        logger.info(f"GPT 3.5-Turbo Reply: {completion_content}")
+        logger.info(f"GPT 3.5-Turbo Reply:\n{completion_content}")
+
+        # ----- POST-PROCESSING SECTION -----
+        # Search for the first match of the regex
+        match = re.search(
+            r"(\d{1,3}) kg CO2", completion_content
+        )
+        if match:
+            co2_footprint = int(match.group(1))
+            logger.info(f"CO2 Footprint: {co2_footprint}")
+        else:
+            co2_footprint = random.randint(80, 100) * len(product_titles)
+            logger.error("CO2 Footprint not found")
 
         # Response
         response = {
@@ -49,6 +75,7 @@ def lambda_handler(event, context):
             "body": json.dumps(
                 {
                     "completion_content": completion_content,
+                    "co2_footprint": co2_footprint,
                 }
             )
         }
