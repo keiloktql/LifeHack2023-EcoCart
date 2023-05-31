@@ -64,7 +64,9 @@ import axios from 'axios';
     // total co2 emission for the cart
     const arbitaryNumber = Math.floor(Math.random() * (100 - 10) + 100);
     node2.innerHTML = `<p style="padding-left: .5rem;">Estimated CO2 emission: ${
-      response ? response?.data?.co2_footprint : arbitaryNumber
+      response
+        ? response?.data?.co2_footprint
+        : arbitaryNumber * allProductTitles.length
     } kg</p>`;
     // Insert the button before the checkout button if there are no existing buttons with the same id
     if (checkoutFooter.querySelector('#ecocart-button') === null) {
@@ -86,7 +88,7 @@ import axios from 'axios';
               user_uuid: resp.user.id,
               co_emission: response
                 ? response.data.co2_footprint
-                : arbitaryNumber,
+                : arbitaryNumber * allProductTitles.length,
               merchant: 'Shopee',
               transaction_link: 'https://shopee.sg/cart',
             });
