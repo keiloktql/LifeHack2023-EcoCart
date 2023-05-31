@@ -33,6 +33,28 @@ const PREFERRED_BRANDS = [
   'Tencent',
 ];
 
+const INSPIRATIONAL_ENIVORNMENTAL_QUOTES = [
+  {
+    quote:
+      'The greatest threat to our planet is the belief that someone else will save it.',
+    author: 'Robert Swan',
+  },
+  {
+    quote:
+      "There is sufficiency in the world for man's need but not for man's greed.",
+    author: 'Mohandas K. Gandhi',
+  },
+  {
+    quote:
+      'Nature provides a free lunch, but only if we control our appetites.',
+    author: 'William Ruckelshaus',
+  },
+  {
+    quote: 'We never know the worth of water till the well is dry.',
+    author: 'Thomas Fuller',
+  },
+];
+
 chrome.storage.local.get('newsSite', (data) => {
   if (chrome.runtime.lastError) {
     return;
@@ -139,6 +161,14 @@ const makePopup = (function () {
 
       let close1 = elem.querySelectorAll('.popupContent .cls')[0];
       let close2 = elem.querySelectorAll('.popupContent .fx')[0];
+
+      const { quote, author } =
+        INSPIRATIONAL_ENIVORNMENTAL_QUOTES[
+          Math.floor(Math.random() * INSPIRATIONAL_ENIVORNMENTAL_QUOTES.length)
+        ];
+
+      elem.querySelectorAll('.popupContent .vIq')[0].innerHTML = quote;
+      elem.querySelectorAll('.popupContent .vIqAuthor')[0].innerHTML = " - " +author;
 
       close1.style.visibility = 'hidden';
       setTimeout(function () {
