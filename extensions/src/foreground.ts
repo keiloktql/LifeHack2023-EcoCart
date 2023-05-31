@@ -298,13 +298,10 @@ const addReinforcement = async function (
   node.innerHTML = `
     <div id="ecocart-flag" class="ecocart-banner" style="border: 1px solid let(--petalc); color: let(--petalc); background: #CBF0C1; padding: 1rem; font: 0.9rem sans-serif; margin-bottom: 1rem; padding-left: 1rem; padding-top: 1rem; padding-bottom: 1rem; border-radius: 5px;">
       <span style="display: flex; justify-content: center; align-items: center;">
-        ${
-          dataExistInDatabase &&
-          `<span class="tooltip">
-            <img src="https://w7.pngwing.com/pngs/910/897/png-transparent-twitter-verified-badge-hd-logo.png" style="height: 17px; width: 17px; margin-right: 10px;">
-            <span class="tooltiptext">Source from <a style="color: #79afe0; text-decoration: underline; " href="https://www.co2everything.com" target="_blank" rel="noopener noreferrer">CO2</a></span>
-          </span>`
-        }
+        <span class="tooltip">
+          <img src="https://cdn-icons-png.flaticon.com/512/665/665049.png" style="height: 17px; width: 17px; margin-right: 10px;">
+          <span class="tooltiptext">Source generated from <a style="color: #79afe0; text-decoration: underline; " href="https://openai.com/" target="_blank" rel="noopener noreferrer">OpenAI</a></span>
+        </span>
         <p>
           Did you the process of making '${
             productInformation['Product Name']

@@ -35,7 +35,7 @@ import { getCurrentUser, supabase } from './popup';
     node2.id = 'ecocart-text';
     // total co2 emission for the cart
     const arbitaryNumber = Math.floor(Math.random() * (1000 - 100) + 1000);
-    node2.innerHTML = `<p style="padding-left: .5rem;">Estimated CO2 emission: ${arbitaryNumber}g</p>`;
+    node2.innerHTML = `<p style="padding-left: .5rem;">Estimated CO2 emission: ${arbitaryNumber}kg</p>`;
 
     // Insert the button before the checkout button if there are no existing buttons with the same id
     if (checkoutFooter.querySelector('#ecocart-button') === null) {
