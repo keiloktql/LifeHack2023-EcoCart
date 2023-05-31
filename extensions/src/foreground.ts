@@ -112,6 +112,10 @@ const makePopup = (function () {
     request.send();
 
     const genPopup = function (elem, score) {
+      const { quote, author } =
+        INSPIRATIONAL_ENIVORNMENTAL_QUOTES[
+          Math.floor(Math.random() * INSPIRATIONAL_ENIVORNMENTAL_QUOTES.length)
+        ];
       const populateNav = function (theNav) {
         if (theNav) {
           if (haveNetflix)
@@ -162,13 +166,9 @@ const makePopup = (function () {
       let close1 = elem.querySelectorAll('.popupContent .cls')[0];
       let close2 = elem.querySelectorAll('.popupContent .fx')[0];
 
-      const { quote, author } =
-        INSPIRATIONAL_ENIVORNMENTAL_QUOTES[
-          Math.floor(Math.random() * INSPIRATIONAL_ENIVORNMENTAL_QUOTES.length)
-        ];
-
       elem.querySelectorAll('.popupContent .vIq')[0].innerHTML = quote;
-      elem.querySelectorAll('.popupContent .vIqAuthor')[0].innerHTML = " - " +author;
+      elem.querySelectorAll('.popupContent .vIqAuthor')[0].innerHTML =
+        ' - ' + author;
 
       close1.style.visibility = 'hidden';
       setTimeout(function () {
@@ -439,14 +439,17 @@ const loadCss = function () {
 
 waitFor(
   getSpecificElement,
-  1000,
+  2000,
   (wrapper) =>
     wrapper !== null && wrapper.querySelector('.page-product__detail') !== null,
   function () {
+    const url = window.location.href;
+    const isUserOnSearchPage = url.includes('search');
+
     // Priority to load css first
     loadCss();
+
     // Run script for product page
-    if (!window.location.href.includes('search'))
-      runScriptProductPage(getWrapper()); // Run script for product page
+    if (!isUserOnSearchPage) runScriptProductPage(getWrapper()); // Run script for product page
   },
 );
