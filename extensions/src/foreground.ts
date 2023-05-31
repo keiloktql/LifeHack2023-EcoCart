@@ -53,6 +53,33 @@ const INSPIRATIONAL_ENIVORNMENTAL_QUOTES = [
     quote: 'We never know the worth of water till the well is dry.',
     author: 'Thomas Fuller',
   },
+  {
+    quote:
+      'The sun, the moon and the stars would have disappeared long ago... had they happened to be within the reach of predatory human hands.',
+    author: 'Havelock Ellis',
+  },
+  {
+    quote: 'The earth is what we all have in common.',
+    author: 'Wendell Berry',
+  },
+  {
+    quote:
+      'The environment is where we all meet; where all have a mutual interest; it is the one thing all of us share.',
+    author: 'Lady Bird Johnson',
+  },
+  {
+    quote: 'We won’t have a society if we destroy the environment.',
+    author: 'Margaret Mead',
+  },
+  {
+    quote: 'The environment is everything that isn’t me.',
+    author: 'Albert Einstein',
+  },
+  {
+    quote:
+      'The environment and the economy are really both two sides of the same coin. If we cannot sustain the environment, we cannot sustain ourselves.',
+    author: 'Wangari Maathai',
+  },
 ];
 
 chrome.storage.local.get('newsSite', (data) => {
