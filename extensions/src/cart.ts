@@ -19,6 +19,18 @@ import { getCurrentUser, supabase } from './popup';
   }
 
   const overrideCheckoutButton = async function (wrapper): Promise<void> {
+    // axios.post(
+    //   'https://udl4feeh2rzckgxuhxlecj3bba0wsoqx.lambda-url.ap-southeast-1.on.aws/',
+    //   {
+    //     product_titles: ["Apple iPad Wi-Fi (9th generation, 2021)"]
+    //   },
+    //   {
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //   },
+    // );
+
     const checkoutFooter = wrapper.querySelector('.rnocow > div.c2pfrq');
     // Create a div
     const node = document.createElement('button');
