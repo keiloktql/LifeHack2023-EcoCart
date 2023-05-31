@@ -2,7 +2,7 @@
 # packages
 import json
 import re
-import random
+import numpy as np
 import openai
 from decouple import config
 
@@ -47,7 +47,7 @@ def lambda_handler(event, context):
         completion = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.5,
+            temperature=0.2,
             presence_penalty=0.1,
             frequency_penalty=0.1,
         )
@@ -63,7 +63,7 @@ def lambda_handler(event, context):
             co2_footprint = int(match.group(1))
             logger.info(f"CO2 Footprint: {co2_footprint}")
         else:
-            co2_footprint = random.randint(80, 100) * len(product_titles)
+            co2_footprint = sum(list(map(lambda x: np.random.normal(45, 5), product_titles)))
             logger.error("CO2 Footprint not found")
 
         # Response
