@@ -32,44 +32,44 @@ Resources:
       PackageType: Image
       Architectures:
         - x86_64
-      Events:
-        postOpenAI:
-          Type: Api
-          Properties:
-            Path: /generate-product-co-message
-            Method: post
+      # Events:
+      #   postOpenAI:
+      #     Type: Api
+      #     Properties:
+      #       Path: /generate-product-co-message
+      #       Method: post
     Metadata:
       DockerTag: python3.9
       DockerContext: functions/generate-product-co-message
       Dockerfile: Dockerfile
-  GenerateProductCOMessageV2:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: !Join ["-", [!Ref AppName, "GenerateProductCOMessageV2"]]
-      Description: >
-        Function to generate Product Carbon Emission Message
-        By querying GPT 3.5-Turbo
-      PackageType: Image
-      Architectures:
-        - x86_64
-      Events:
-        postOpenAI:
-          Type: Api
-          Properties:
-            Path: /generate-product-co-message-v2
-            Method: post
-      # Configure IAM Policies
-      Policies:
-        - Statement:
-            - Effect: Allow
-              Action:
-                - "rekognition:*"
-              Resource:
-                - "*"
-    Metadata:
-      DockerTag: python3.9
-      DockerContext: functions/generate-product-co-message-v2
-      Dockerfile: Dockerfile
+  # GenerateProductCOMessageV2:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     FunctionName: !Join ["-", [!Ref AppName, "GenerateProductCOMessageV2"]]
+  #     Description: >
+  #       Function to generate Product Carbon Emission Message
+  #       By querying GPT 3.5-Turbo
+  #     PackageType: Image
+  #     Architectures:
+  #       - x86_64
+  #     Events:
+  #       postOpenAI:
+  #         Type: Api
+  #         Properties:
+  #           Path: /generate-product-co-message-v2
+  #           Method: post
+  #     # Configure IAM Policies
+  #     Policies:
+  #       - Statement:
+  #           - Effect: Allow
+  #             Action:
+  #               - "rekognition:*"
+  #             Resource:
+  #               - "*"
+  #   Metadata:
+  #     DockerTag: python3.9
+  #     DockerContext: functions/generate-product-co-message-v2
+  #     Dockerfile: Dockerfile
   CalculateTotalCO:
     Type: AWS::Serverless::Function
     Properties:
@@ -80,12 +80,12 @@ Resources:
       PackageType: Image
       Architectures:
         - x86_64
-      Events:
-        postOpenAI:
-          Type: Api
-          Properties:
-            Path: /calculate-total-co
-            Method: post
+      # Events:
+      #   postOpenAI:
+      #     Type: Api
+      #     Properties:
+      #       Path: /calculate-total-co
+      #       Method: post
     Metadata:
       DockerTag: python3.9
       DockerContext: functions/calculate-total-co
