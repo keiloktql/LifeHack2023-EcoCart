@@ -413,7 +413,7 @@ const runScriptProductPage = (function () {
           const relativeUnits = convertCO2ToUnit(arbitaryNumber);
           const data = `Did you the process of making '${
             productInformation['Product Name']
-          }' produces <b>${arbitaryNumber}</b> of CO2? That is equivalent to <b>${relativeUnits.join(
+          }' produces <b>${arbitaryNumber}</b>kg of CO2? That is equivalent to <b>${relativeUnits.join(
             ', ',
           )}</b>!`;
 
