@@ -2,6 +2,7 @@
 related to the given product title'''
 # packages
 import json
+import base64
 import openai
 from decouple import config
 import boto3
@@ -16,9 +17,10 @@ Give a fun-fact related to environmental conservation, related to the given prod
 XXX refers to an estimated quantitative value.
 Product title: {product_title}
 Product categories: {categories}.
-Give an answer no matter what, give a rough estimate based on the product and categories.
-Or else, give a random fun-fact related to environmental conservation based on the product and categories.
-No matter what, you must give a rough estimate of the value of CO2 produced, infer from product and categories.
+Rekognition Detection: {labels}
+Give an answer no matter what, give a rough estimate based on the product title, product categories and Rekognition Detection.
+Or else, give a random fun-fact related to environmental conservation based on the based on the product title, product categories and Rekognition Detection.
+No matter what, you must give a rough estimate of the value of CO2 produced, infer from based on the product title, product categories and Rekognition Detection.
 
 Reply in the following template:
 Did you know the process of making {product_title} produces XXX of CO2 g?
@@ -27,6 +29,20 @@ That is equivalent to XXX cigarettes, XXX car miles, XXX smartphone charges!
 
 # --------------- Python AWS SDK ------------------
 rekognition = boto3.client('rekognition', region_name='ap-southeast-1')
+
+def detect_labels(b64_img: str):
+    """
+    rekognition detect labels function via boto3 sdk
+    """
+    logger.info("Running rekognition detect_labels function via boto3 sdk")
+    response = rekognition.detect_labels(
+        Image={
+            'Bytes': base64.b64decode(b64_img)
+        },
+        MaxLabels=10,
+        MinConfidence=90
+    )
+    return response
 
 def lambda_handler(event, context):
     """
@@ -58,8 +74,16 @@ def lambda_handler(event, context):
     # Categories preprocessing
     categories = ", ".join(categories)
 
+    # ----- QUERY REKOGNITION SECTION -----
+    labels = detect_labels(base64_image)
+    logger.info(f"Rekognition Reply:\n{labels}")
+
     # ----- QUERY GPT SECTION -----
-    prompt = PROMPT_TEMPLATE.format(categories=categories, product_title=product_title)
+    prompt = PROMPT_TEMPLATE.format(
+        categories=categories,
+        product_title=product_title,
+        labels=labels
+    )
     try:
         completion = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
