@@ -273,7 +273,7 @@ const runScriptProductPage = (function () {
   return async function (wrapper) {
     try {
       // variables
-      let newStorageData;
+      let newStorageData = {};
       const productInformation = { categories: [] };
       const currentStorageData = await getStorageData();
       const score = currentStorageData?.score;
@@ -285,12 +285,11 @@ const runScriptProductPage = (function () {
       );
       const productRowAndColumn = productWrapper.querySelectorAll('div.dR8kXc');
 
-      // Data State Management
+      /**
+       * Data state and management
+       */
       // if the score is greater than 5, reset it back to 0
-      console.log(score);
-      console.log(score >= 5);
       if (score >= 5) {
-        console.log('HERE IS CALLED');
         newStorageData = Object.assign({}, currentStorageData, {
           score: 0,
         });
@@ -300,9 +299,9 @@ const runScriptProductPage = (function () {
         });
       }
 
-      await setStorageData(newStorageData);
-
-      // Scripting
+      /**
+       * Scripting
+       */
       productInformation.categories = Array.from(
         breadcrumbWrapper.querySelectorAll('a, span'),
       ).map((breadcrumb) => breadcrumb.innerText);
@@ -311,21 +310,20 @@ const runScriptProductPage = (function () {
 
       Array.from(productRowAndColumn).forEach((row) => {
         const title = row.querySelector('label').innerText;
-        const body = row.querySelector('div')?.innerText || '';
+        const bodyElement = row.querySelector('div');
+        const body =
+          bodyElement?.innerText ||
+          bodyElement?.querySelector('a')?.innerText ||
+          '';
 
-        // Check if the body is an empty string, it might be a link / anchor tag
-        if (body === '') {
-          const anchor = row.querySelector('a');
-          if (anchor) {
-            productInformation[title] = anchor.innerText;
-          }
-        } else {
-          productInformation[title] = body;
-        }
+        productInformation[title] = body;
       });
+
+      console.log(productInformation);
 
       const productTitleWrapper = wrapper.querySelector('._44qnta');
       document.querySelector('div[id="ecocart-flag"]')?.remove();
+      await setStorageData(newStorageData);
 
       for (const brand of PREFERRED_BRANDS) {
         if (productInformation['Product Name']?.includes(brand)) {
@@ -337,11 +335,7 @@ const runScriptProductPage = (function () {
       await getProductCarbonFootprintData(productInformation)
         .then(async (data) => {
           await productTitleWrapper.parentElement.prepend(
-            await addReinforcement(
-              doesProductExistInDatabase,
-              productInformation,
-              data?.completion_content,
-            ),
+            await addReinforcement(data?.completion_content),
           );
         })
         .catch(async () => {
@@ -354,11 +348,7 @@ const runScriptProductPage = (function () {
           )}</b>!`;
 
           await productTitleWrapper.parentElement.prepend(
-            await addReinforcement(
-              doesProductExistInDatabase,
-              productInformation,
-              data,
-            ),
+            await addReinforcement(data),
           );
         });
     } catch (err) {
@@ -368,11 +358,7 @@ const runScriptProductPage = (function () {
 })();
 
 // Insert banner into the page
-const addReinforcement = async function (
-  dataExistInDatabase = false,
-  productInformation = {},
-  data: any,
-) {
+const addReinforcement = async function (data: string) {
   // if there already is a banner, such as 'ecocart-flag' then don't add another one
   if (document.getElementById('ecocart-flag')) return;
 
