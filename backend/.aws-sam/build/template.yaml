@@ -34,52 +34,12 @@ Resources:
       PackageType: Image
       Architectures:
       - x86_64
-      Events:
-        postOpenAI:
-          Type: Api
-          Properties:
-            Path: /generate-product-co-message
-            Method: post
       ImageUri: generateproductcomessage:python3.9
     Metadata:
       DockerContext: /workspaces/LifeHack2023/backend/functions/generate-product-co-message
       DockerTag: python3.9
       Dockerfile: Dockerfile
       SamResourceId: GenerateProductCOMessage
-  GenerateProductCOMessageV2:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName:
-        Fn::Join:
-        - '-'
-        - - Ref: AppName
-          - GenerateProductCOMessageV2
-      Description: 'Function to generate Product Carbon Emission Message By querying
-        GPT 3.5-Turbo
-
-        '
-      PackageType: Image
-      Architectures:
-      - x86_64
-      Events:
-        postOpenAI:
-          Type: Api
-          Properties:
-            Path: /generate-product-co-message-v2
-            Method: post
-      Policies:
-      - Statement:
-        - Effect: Allow
-          Action:
-          - rekognition:*
-          Resource:
-          - '*'
-      ImageUri: generateproductcomessagev2:python3.9
-    Metadata:
-      DockerContext: /workspaces/LifeHack2023/backend/functions/generate-product-co-message-v2
-      DockerTag: python3.9
-      Dockerfile: Dockerfile
-      SamResourceId: GenerateProductCOMessageV2
   CalculateTotalCO:
     Type: AWS::Serverless::Function
     Properties:
@@ -95,12 +55,6 @@ Resources:
       PackageType: Image
       Architectures:
       - x86_64
-      Events:
-        postOpenAI:
-          Type: Api
-          Properties:
-            Path: /calculate-total-co
-            Method: post
       ImageUri: calculatetotalco:python3.9
     Metadata:
       DockerContext: /workspaces/LifeHack2023/backend/functions/calculate-total-co
