@@ -72,13 +72,14 @@ const PREFERRED_BRANDS = [
               card.querySelector('.rVLWG6').style = 'flex-grow: 0';
 
               // if the user clicks on the card, add score to the user in chrome storage
-              card.addEventListener('click', async () => {
-                const currentStorageData = await getStorageData();
-                const newStorageData = Object.assign({}, currentStorageData, {
-                  score: currentStorageData.score + 1,
-                });
-                await setStorageData(newStorageData);
-              });
+              // card.addEventListener('click', async () => {
+              //   const currentStorageData = await getStorageData();
+              //   const newStorageData = Object.assign({}, currentStorageData, {
+              //     score: currentStorageData.score++,
+              //   });
+
+              //   await setStorageData(newStorageData);
+              // });
             }
           }
         }

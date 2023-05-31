@@ -306,7 +306,7 @@ const runScriptProductPage = (function () {
       let newStorageData = {};
       const productInformation = { categories: [] };
       const currentStorageData = await getStorageData();
-      const score = currentStorageData?.score;
+      const score = currentStorageData.score;
       const breadcrumbWrapper = wrapper.querySelector(
         'div.page-product__breadcrumb',
       );
