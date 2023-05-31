@@ -63,7 +63,7 @@ def lambda_handler(event, context):
             co2_footprint = int(match.group(1))
             logger.info(f"CO2 Footprint: {co2_footprint}")
         else:
-            co2_footprint = round(sum(list(map(lambda x: np.random.normal(50, 10), product_titles))), 2)
+            co2_footprint = round(sum(list(map(lambda x: np.random.normal(50, 10), product_titles))), 0)
             logger.error("CO2 Footprint not found")
 
         # Response
