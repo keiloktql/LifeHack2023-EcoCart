@@ -2,6 +2,7 @@
 // @ts-nocheck
 import { createClient, User } from '@supabase/supabase-js';
 import { getCurrentUser, supabase } from './popup';
+import axios from 'axios';
 
 (() => {
   function getWrapper(): Element | null {
@@ -19,17 +20,24 @@ import { getCurrentUser, supabase } from './popup';
   }
 
   const overrideCheckoutButton = async function (wrapper): Promise<void> {
-    // axios.post(
-    //   'https://udl4feeh2rzckgxuhxlecj3bba0wsoqx.lambda-url.ap-southeast-1.on.aws/',
-    //   {
-    //     product_titles: ["Apple iPad Wi-Fi (9th generation, 2021)"]
-    //   },
-    //   {
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //   },
-    // );
+    console.log('running overrideCheckoutButton');
+    let response = null;
+    try {
+      response = await axios.post(
+        'https://udl4feeh2rzckgxuhxlecj3bba0wsoqx.lambda-url.ap-southeast-1.on.aws/',
+        {
+          product_titles: ['Apple iPad Wi-Fi (9th generation, 2021)'],
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
 
     const checkoutFooter = wrapper.querySelector('.rnocow > div.c2pfrq');
     // Create a div
@@ -47,7 +55,7 @@ import { getCurrentUser, supabase } from './popup';
     node2.id = 'ecocart-text';
     // total co2 emission for the cart
     const arbitaryNumber = Math.floor(Math.random() * (1000 - 100) + 1000);
-    node2.innerHTML = `<p style="padding-left: .5rem;">Estimated CO2 emission: ${arbitaryNumber}kg</p>`;
+    node2.innerHTML = `<p style="padding-left: .5rem;">Estimated CO2 emission: ${arbitaryNumber} kg</p>`;
 
     // Insert the button before the checkout button if there are no existing buttons with the same id
     if (checkoutFooter.querySelector('#ecocart-button') === null) {
