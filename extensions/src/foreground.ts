@@ -286,10 +286,6 @@ function getSpecificElement() {
   return document.querySelector('div.page-product__content');
 }
 
-function doesProductExistInDatabase() {
-  return false;
-}
-
 function convertCO2ToUnit(grams) {
   const units = [
     { label: 'cigarettes', conversion: 21.8 },
@@ -310,10 +306,12 @@ function convertCO2ToUnit(grams) {
 
 async function getProductCarbonFootprintData(productInformation) {
   const res = await axios.post(
-    'https://uqotzmk2ml3p2lc2qglj42lk6m0mpqbe.lambda-url.ap-southeast-1.on.aws/',
+    'https://npfbkkvsi73gj6bzxrimkxgg5m0obfbw.lambda-url.ap-southeast-1.on.aws/',
     {
       categories: productInformation.categories,
       product_title: productInformation['Product Name'],
+      ship_to: 'Singapore',
+      ship_from: productInformation['Ships From'] || 'Singapore',
     },
     {
       headers: {
@@ -391,9 +389,24 @@ const runScriptProductPage = (function () {
       // Query the api for the carbon footprint data
       await getProductCarbonFootprintData(productInformation)
         .then(async (data) => {
-          await productTitleWrapper.parentElement.prepend(
-            await addReinforcement(data?.completion_content),
-          );
+          const content = data?.completion_content;
+
+          if (content.includes('Sorry!')) {
+            const arbitaryNumber = Math.floor(Math.random() * 100 + 5);
+            const relativeUnits = convertCO2ToUnit(arbitaryNumber);
+            const data = `Did you the process of making '${
+              productInformation['Product Name']
+            }' produces <b>${arbitaryNumber}</b>kg of CO2? That is equivalent to <b>${relativeUnits.join(
+              ', ',
+            )}</b>!`;
+            await productTitleWrapper.parentElement.prepend(
+              await addReinforcement(data),
+            );
+          } else {
+            await productTitleWrapper.parentElement.prepend(
+              await addReinforcement(data?.completion_content),
+            );
+          }
         })
         .catch(async () => {
           const arbitaryNumber = Math.floor(Math.random() * (1000 - 100) + 300);
@@ -420,8 +433,8 @@ const addReinforcement = async function (data: string) {
   if (document.getElementById('ecocart-flag')) return;
 
   const node = document.createElement('div');
-  node.innerHTML = `
-    <div id="ecocart-flag" class="ecocart-banner" style="border: 1px solid let(--petalc); color: let(--petalc); background: #CBF0C1; padding: 1rem; font: 0.9rem sans-serif; margin-bottom: 1rem; padding-left: 1rem; padding-top: 1rem; padding-bottom: 1rem; border-radius: 5px;">
+  node.id = 'ecocart-flag';
+  node.innerHTML = `<div class="ecocart-banner" style="border: 1px solid let(--petalc); color: let(--petalc); background: #CBF0C1; padding: 1rem; font: 0.9rem sans-serif; margin-bottom: 1rem; padding-left: 1rem; padding-top: 1rem; padding-bottom: 1rem; border-radius: 5px;">
       <span style="display: flex; justify-content: center; align-items: center;">
         <span class="tooltip">
           <img src="https://cdn-icons-png.flaticon.com/512/665/665049.png" style="height: 17px; width: 17px; margin-right: 10px;">
@@ -437,6 +450,7 @@ const addReinforcement = async function (data: string) {
       </div>  
     </div>`;
 
+  console.log(node);
   return node;
 };
 
